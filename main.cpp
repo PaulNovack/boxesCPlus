@@ -64,6 +64,7 @@ int main(void) {
                 res << name;
             });
     served::net::server server("127.0.0.1", "8123", mux);
+    cout << "Server Up...." << endl;
     server.run(50);
 
     return (EXIT_SUCCESS);
