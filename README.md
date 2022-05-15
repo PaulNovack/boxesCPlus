@@ -9,6 +9,16 @@ Small list of 8 boxes serves about 7000 req/sec on i7 Laptop running http server
 
 Work in progress just got connection pool working after changing over to XDev API mySQL Connectivity
 
+Requires libs installed in addition to normal c++ build tools to compile
+
+MySQLConnector C++  uses xDev API https://dev.mysql.com/doc/connector-cpp/8.0/en/
+
+served https://github.com/meltwater/served
+
+libboost https://www.boost.org/  (sudo apt install libboost-all-dev)
+
+
+
 ## Required libraries (ldd boxescplus)
 
 linux-vdso.so.1 
