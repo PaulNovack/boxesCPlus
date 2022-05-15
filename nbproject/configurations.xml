@@ -46,13 +46,37 @@
           </incDir>
         </ccTool>
         <linkerTool>
+          <linkerCopySharedLibs>true</linkerCopySharedLibs>
           <linkerLibItems>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
-            <linkerLibLibItem>served</linkerLibLibItem>
             <linkerLibFileItem>/usr/lib/libmysqlcppconn8.so</linkerLibFileItem>
+            <linkerLibFileItem>/usr/lib/libserved.so</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <packaging>
+        <packType>Tar</packType>
+        <packFileList>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libmysqlcppconn8.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmysqlcppconn8.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libserved.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libserved.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+        </packFileList>
+      </packaging>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>

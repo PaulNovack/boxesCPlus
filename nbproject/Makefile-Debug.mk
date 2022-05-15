@@ -52,13 +52,17 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lpthread -lserved /usr/lib/libmysqlcppconn8.so
+LDLIBSOPTIONS=-lpthread /usr/lib/libmysqlcppconn8.so /usr/lib/libserved.so
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/boxescplus
+	${CP} /usr/lib/libmysqlcppconn8.so ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
+	${CP} /usr/lib/libserved.so ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/boxescplus: /usr/lib/libmysqlcppconn8.so
+
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/boxescplus: /usr/lib/libserved.so
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/boxescplus: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
@@ -75,7 +79,7 @@ ${OBJECTDIR}/main.o: main.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} -r ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmysqlcppconn8.so
+	${RM} -r ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmysqlcppconn8.so ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libserved.so
 	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/boxescplus
 
 # Subprojects
