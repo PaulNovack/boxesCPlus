@@ -40,35 +40,6 @@ There is a docker file that contains all the set up to enable libraries and copy
 
 You should then be able to access: http://127.0.0.1:8123/boxes/1
 
-
-## Required libraries (ldd boxescplus)
-
-linux-vdso.so.1 
-
-libpthread.so.0 
-
-libmysqlcppconn8.so.2  -- Included in dist folder for ubuntu 20.04
-
-libserved.so.1.4  -- Included in dist folder for ubuntu 20.04
-
-libstdc++.so.6 
-
-libgcc_s.so.1 
-
-libc.so.6 
-
-/lib64/ld-linux-x86-64.so.2 
-
-libssl.so.1.1 
-
-libcrypto.so.1.1 
-
-libresolv.so.2 
-
-libm.so.6 
-
-libdl.so.2 
-
 # Performance of get boxes method using apache bench
 
 ![apacheBenchPerformance](https://user-images.githubusercontent.com/3844301/168474846-f1e2ad35-53c9-4717-8bcb-d0522f2a8b83.png)
