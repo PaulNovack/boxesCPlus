@@ -1,7 +1,7 @@
 # boxesCPlus
 C++ API micro service for boxes react front end
 
-Work in Progress........
+Work in Progress........ only one endpoint working "http://127.0.0.1:8123/boxes/1"
 
 Serves simple requests in less than 2 ms. On test laptop. Uses new mySQL dev API for connection pool and boost beast for http server.
 
@@ -22,6 +22,21 @@ Once you have all dependancies installed from root of project run:
 
 make build or make clean
 
+- or run with docker set up below....
+
+## Load database
+
+You will need to load the database in data directory into a mysql instance running on host database named "boxes" and set up user "boxes" and password "boxes" on host.
+
+The container "startServer.sh" is set up to use argument "--add-host=host.docker.internal:host-gateway" so the docker container will reference the database by the dsn "host.docker.internal" if you are running a reasonaly up to date docker installation this will work on linux, mac and windows.
+
+## Running with docker
+
+There is a docker file that contains all the set up to enable libraries and copy executable file into the container
+- create container run: ./createBoxesDockerContainer.sh
+- list the containers get the container id run: docker image list
+- In the start server replace the hash with the containerid from above
+- Run: startServer.sh
 
 
 ## Required libraries (ldd boxescplus)
