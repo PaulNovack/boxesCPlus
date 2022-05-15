@@ -26,7 +26,7 @@ make build or make clean
 
 ## Load database
 
-You will need to load the database in data directory into a mysql instance running on host database named "boxes" and set up user "boxes" and password "boxes" on host.
+You will need to load the database "boxes.sql" in data directory into a mysql instance running on host database named "boxes" and set up user "boxes" and password "boxes" on host.
 
 The container "startServer.sh" is set up to use argument "--add-host=host.docker.internal:host-gateway" so the docker container will reference the database by the dsn "host.docker.internal" if you are running a reasonably up to date docker installation this will work on linux, mac and windows.
 
