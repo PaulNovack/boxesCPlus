@@ -16,7 +16,7 @@ using namespace std;
 
 int main(void) {
 
-    Client cli("boxes:boxes@127.0.0.1/boxes", ClientOption::POOL_MAX_SIZE, 60);
+    Client cli("boxes:boxes@host.docker.internal/boxes", ClientOption::POOL_MAX_SIZE, 60);
     // use Session sess as usual
     served::multiplexer mux;
     mux.handle("/boxes/{id}")
@@ -45,7 +45,8 @@ int main(void) {
                 res.set_header("content-type", "application/json");
                 res << name;
             });
-    served::net::server server("127.0.0.1", "8123", mux);
+            
+    served::net::server server("0.0.0.0", "8123", mux);
     cout << "Server Up...." << endl;
     server.run(50);
 

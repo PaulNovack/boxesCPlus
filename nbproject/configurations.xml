@@ -25,6 +25,10 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>Dockerfile</itemPath>
+    <itemPath>createBoxesDockerContainer.sh</itemPath>
+    <itemPath>dockerListImages.sh</itemPath>
+    <itemPath>startServer.sh</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>/usr/local/include/mysql-connector-c++-8.0.29-src</Elem>
@@ -77,7 +81,15 @@
                             group="bin"/>
         </packFileList>
       </packaging>
+      <item path="Dockerfile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="createBoxesDockerContainer.sh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dockerListImages.sh" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="startServer.sh" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -100,7 +112,15 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="Dockerfile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="createBoxesDockerContainer.sh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dockerListImages.sh" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="startServer.sh" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>
