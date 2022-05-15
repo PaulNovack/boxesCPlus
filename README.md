@@ -9,7 +9,7 @@ Small list of 8 boxes serves about 7000 req/sec on i7 Laptop running http server
 
 Work in progress just got connection pool working after changing over to XDev API mySQL Connectivity
 
-## Required (ldd boxescplus)
+## Required libraries (ldd boxescplus)
 
 linux-vdso.so.1 
 
