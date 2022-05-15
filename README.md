@@ -18,7 +18,7 @@ served https://github.com/meltwater/served
 libboost https://www.boost.org/  (sudo apt install libboost-all-dev)
 
 ## Building
-Once you have all dependancies installed from root of project
+Once you have all dependancies installed from root of project run:
 
 make build or make clean
 
