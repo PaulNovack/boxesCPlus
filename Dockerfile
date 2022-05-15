@@ -13,15 +13,8 @@ WORKDIR /app
 COPY . .
 COPY /dist/Debug/GNU-Linux/libmysqlcppconn8.so /usr/lib/libmysqlcppconn8.so
 COPY /dist/Debug/GNU-Linux/libserved.so /usr/local/lib/libserved.so
-# install build dependencies
 CMD ["cp","/usr/local/lib/libmysqlcppconn8.so","/usr/local/lib/libmysqlcppconn8.so.2"]                                                  
-#CMD [["ldconfig","-l" "/usr/local/lib/libmysqlcppconn8.so"] 
 RUN ldconfig                  
 #RUN /app/dist/Debug/GNU-Linux/boxescplus
 
-
-
-
-
-# expose port 22 
 EXPOSE 8123
