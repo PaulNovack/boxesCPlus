@@ -38,6 +38,8 @@ There is a docker file that contains all the set up to enable libraries and copy
 - In the start server replace the hash with the containerid from above
 - Run: startServer.sh
 
+You should then be able to access: http://127.0.0.1:8123/boxes/1
+
 
 ## Required libraries (ldd boxescplus)
 
