@@ -1,7 +1,9 @@
 # boxesCPlus
 C++ API micro service for boxes react front end
 
-Work in Progress........ only one endpoint working "http://127.0.0.1:8123/boxes/1"
+Work in Progress........ Update will be made once session and login code is complete.
+
+Only one endpoint working "http://127.0.0.1:8123/boxes/1"
 
 Serves simple requests in less than 2 ms. On test laptop. Uses new mySQL dev API for connection pool and boost beast for http server.
 
