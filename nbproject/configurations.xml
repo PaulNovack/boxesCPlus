@@ -27,7 +27,6 @@
     </logicalFolder>
     <itemPath>Dockerfile</itemPath>
     <itemPath>createBoxesDockerContainer.sh</itemPath>
-    <itemPath>dockerListImages.sh</itemPath>
     <itemPath>startServer.sh</itemPath>
   </logicalFolder>
   <sourceRootList>
@@ -85,8 +84,6 @@
       </item>
       <item path="createBoxesDockerContainer.sh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="dockerListImages.sh" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="startServer.sh" ex="false" tool="3" flavor2="0">
@@ -115,8 +112,6 @@
       <item path="Dockerfile" ex="false" tool="3" flavor2="0">
       </item>
       <item path="createBoxesDockerContainer.sh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="dockerListImages.sh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
