@@ -1,15 +1,21 @@
 # boxesCPlus
 C++ API micro service for boxes react front end
 
-Work in Progress........ Update will be made once session and login code is complete.
+Work in Progress......  
 
-Only one endpoint working "http://127.0.0.1:8123/boxes/1"
+Needs mutex locking access to arrays of boxes and items 
 
-Serves simple requests in less than 2 ms. On test laptop. Uses new mySQL dev API for connection pool and boost beast for http server.
+Needs routes added to match golang version of:
 
-Small list of 8 boxes serves about ~4000 req/sec on i7 Laptop running http server and mysql database.
+	r.HandleFunc("/boxes", postBox).Methods("POST")
+	r.HandleFunc("/boxes", putBox).Methods("PUT")
+	r.HandleFunc("/boxes/{box_id}", deleteBox).Methods("DELETE")
+	r.HandleFunc("/items", postItem).Methods("POST")
+	r.HandleFunc("/items", putItem).Methods("PUT")
+	r.HandleFunc("/items/{box_id}", getItems).Methods("GET")
+	r.HandleFunc("/items/{item_id}", deleteItem).Methods("DELETE")
 
-Work in progress just got connection pool working after changing over to XDev API mySQL Connectivity
+Serves simple requests in less than 2 ms.
 
 Requires libs installed in addition to normal c++ build tools to compile
 
@@ -40,7 +46,14 @@ There is a docker file that contains all the set up to enable libraries and copy
 - In the "startServer.sh" replace the hash with the containerid from above
 - Run: startServer.sh
 
-You should then be able to access: http://127.0.0.1:8123/boxes/1
+
+You should then be able to access: 
+
+http://127.0.0.1:8123/login?username=paulnovack&password=paulnovack
+
+http://127.0.0.1:8123/boxes/1
+
+http://127.0.0.1:8123/logout
 
 # Performance of get boxes method using apache bench
 
