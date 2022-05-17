@@ -46,7 +46,11 @@ There is a docker file that contains all the set up to enable libraries and copy
 - In the "startServer.sh" replace the hash with the containerid from above
 - Run: startServer.sh
 
-You should then be able to access: http://127.0.0.1:8123/boxes/1
+
+You should then be able to access: 
+http://127.0.0.1:8123/login?username=paulnovack&password=paulnovack
+http://127.0.0.1:8123/boxes/1
+http://127.0.0.1:8123/logout
 
 # Performance of get boxes method using apache bench
 
