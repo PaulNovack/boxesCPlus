@@ -13,11 +13,7 @@ Needs routes added to match golang version of:
 	r.HandleFunc("/items/{box_id}", getItems).Methods("GET")
 	r.HandleFunc("/items/{item_id}", deleteItem).Methods("DELETE")
 
-Serves simple requests in less than 2 ms. On test laptop. Uses new mySQL dev API for connection pool and boost beast for http server.
-
-Small list of 8 boxes serves about ~4000 req/sec on i7 Laptop running http server and mysql database.
-
-Work in progress just got connection pool working after changing over to XDev API mySQL Connectivity
+Serves simple requests in less than 2 ms.
 
 Requires libs installed in addition to normal c++ build tools to compile
 
