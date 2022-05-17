@@ -144,7 +144,7 @@ int main(void) {
                 if (userBoxes[user_id] == "") {
 
 
-                    SqlResult myRows = sess.sql("SELECT user_id, name,weight, picture,created_at FROM boxes where user_id = ?")
+                    SqlResult myRows = sess.sql("SELECT id,user_id, name,weight, picture,created_at FROM boxes where user_id = ?")
                             .bind(user_id).execute();
                             std::stringstream buffer;
                             bool hasRows = false;
@@ -152,10 +152,11 @@ int main(void) {
                     for (Row row : myRows.fetchAll()) {
                         hasRows = true;
                                 buffer << "{";
-                                buffer << "\"user_id\":" << "\"" << row[0] << "\",";
-                                buffer << "\"name\":" << "\"" << row[1] << "\",";
-                                buffer << "\"weight\":" << "\"" << row[2] << "\",";
-                                buffer << "\"picture\":" << "\"" << row[3] << "\"";
+                                buffer << "\"id\":" << "\"" << row[0] << "\",";
+                                buffer << "\"user_id\":" << row[1] << ",";
+                                buffer << "\"name\":" << "\"" << row[2] << "\",";
+                                buffer << "\"weight\":" << "\"" << row[3] << "\",";
+                                buffer << "\"picture\":" << "\"" << row[4] << "\"";
                                 buffer << "},";
                     }
                     if (hasRows) {
@@ -165,6 +166,45 @@ int main(void) {
                             userBoxes[user_id] = buffer.str();
                 }
                 res << userBoxes[user_id];
+            });
+    mux.handle("/boxes{id}")
+
+            .get([&](served::response &res, const served::request & req) {
+                std::string name;
+                std::string header = req.header("cookie");
+                std::string authKey = getAuthKey(header);
+                std::string box_id_str = req.params["id"];
+                int box_id = stoi(box_id_str);
+                Session sess = cli.getSession();
+                int user_id = getUserIdFromAuthKey(cli, authKey);
+
+                if(userItems[box_id] != "") {
+                        // check user owns
+                } else {
+                    SqlResult myRows =
+                            sess.sql("SELECT id,user_id,box_id, name,quantity, picture,created_at FROM items where user_id = ? and box_id = ?")
+                            .bind(user_id, box_id).execute();
+                            std::stringstream buffer;
+                            bool hasRows = false;
+                            buffer << "[";
+                    for (Row row : myRows.fetchAll()) {
+                        hasRows = true;
+                                buffer << "{";
+                                buffer << "\"id\":" << "\"" << row[0] << "\",";
+                                buffer << "\"user_id\":" << row[0] << ",";
+                                buffer << "\"box_id\":" << row[1] << ",";
+                                buffer << "\"name\":" << "\"" << row[2] << "\",";
+                                buffer << "\"quantity\":" << row[3] << ",";
+                                buffer << "\"picture\":" << "\"" << row[4] << "\"";
+                                buffer << "},";
+                    }
+                    if (hasRows) {
+                        buffer.seekp(-1, std::ios_base::end);
+                    }
+                    buffer << "]";
+                            userItems[user_id] = buffer.str();
+                }
+                res << userItems[user_id];
             });
     mux.handle("/login")
             .get([&](served::response &res, const served::request & req) {
@@ -178,6 +218,7 @@ int main(void) {
                     user_id = logUserIn(cli, username, password, authKey);
                             res.set_header("content-type", "application/json");
                             time_t now = time(0);
+                            // cookies are in GMT time.
                             tm *ltm = gmtime(&now);
                             ltm->tm_min = ltm->tm_min + 10;
                             std::string timeReadable = "";
@@ -207,6 +248,9 @@ int main(void) {
                 char buf[80];
                 strftime(buf, 80, "%a, %e %h %G %T GMT", ltm);
                 buffer << buf;
+                // not for certain but set cookie to expire now and value deleted just
+                // in case users browser does not allow you to serverside delete a 
+                // cookie by an expiration some browsers supposedly do not?
                 std::string cookie = "authToken=deleted;SameSite=Strict;Expires=" + buffer.str();
                 res.set_header("Set-Cookie", cookie);
                 res << "{\"logout\": \"true\"}";
