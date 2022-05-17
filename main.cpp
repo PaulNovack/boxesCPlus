@@ -130,6 +130,61 @@ int main(void) {
     Client cli("boxes:boxes@127.0.0.1/boxes", ClientOption::POOL_MAX_SIZE, 60);
     // use Session sess as usual
     served::multiplexer mux;
+    mux.handle("/boxes/{id}")
+
+            .get([&](served::response &res, const served::request & req) {
+                std::string name;
+                std::string header = req.header("cookie");
+                std::string authKey = getAuthKey(header);
+                std::string box_id_str = req.params["id"];
+                int box_id = stoi(box_id_str);
+                Session sess = cli.getSession();
+                int user_id = getUserIdFromAuthKey(cli, authKey);
+                if (user_id == 0) {
+                    res << "{\"logout\": true}";
+
+                } else {
+                    std::lock_guard<std::mutex> guard(l_user_boxes_map);
+                    if (userItems[box_id] != "") {
+                        std::string search = "\"user_id\":";
+                                search = search + std::to_string(user_id);;
+                                search = search + ",";
+                                search = search + "\"box_id\":";
+                                search = search + box_id_str;
+                                int pos = userItems[box_id].find(search);
+                                if(pos == -1){
+                                    user_id = 0;
+                                    res << "{\"logout\": true}";
+                                }
+                    } else {
+                        SqlResult myRows =
+                                sess.sql("SELECT id,user_id,box_id, name,quantity, picture,created_at FROM items where user_id = ? and box_id = ?")
+                                .bind(user_id, box_id).execute();
+                                std::stringstream buffer;
+                                bool hasRows = false;
+                                buffer << "[";
+                        for (Row row : myRows.fetchAll()) {
+                            hasRows = true;
+                                    buffer << "{";
+                                    buffer << "\"id\":" << row[0] << ",";
+                                    buffer << "\"user_id\":" << row[1] << ",";
+                                    buffer << "\"box_id\":" << row[2] << ",";
+                                    buffer << "\"name\":" << "\"" << row[3] << "\",";
+                                    buffer << "\"quantity\":" << row[4] << ",";
+                                    buffer << "\"picture\":" << "\"" << row[5] << "\"";
+                                    buffer << "},";
+                        }
+                        if (hasRows) {
+                            buffer.seekp(-1, std::ios_base::end);
+                        }
+                        buffer << "]";
+                                userItems[box_id] = buffer.str();
+                    }
+                    if (user_id != 0) {
+                        res << userItems[box_id];
+                    }
+                }
+            });
     mux.handle("/boxes")
 
             .get([&](served::response &res, const served::request & req) {
@@ -140,7 +195,10 @@ int main(void) {
 
                 Session sess = cli.getSession();
                 int user_id = getUserIdFromAuthKey(cli, authKey);
-
+                if (user_id == 0) {
+                    res << "{\"logout\": true}";
+                    return;
+                }
                 if (userBoxes[user_id] == "") {
 
 
@@ -167,45 +225,7 @@ int main(void) {
                 }
                 res << userBoxes[user_id];
             });
-    mux.handle("/boxes{id}")
 
-            .get([&](served::response &res, const served::request & req) {
-                std::string name;
-                std::string header = req.header("cookie");
-                std::string authKey = getAuthKey(header);
-                std::string box_id_str = req.params["id"];
-                int box_id = stoi(box_id_str);
-                Session sess = cli.getSession();
-                int user_id = getUserIdFromAuthKey(cli, authKey);
-
-                if(userItems[box_id] != "") {
-                        // check user owns
-                } else {
-                    SqlResult myRows =
-                            sess.sql("SELECT id,user_id,box_id, name,quantity, picture,created_at FROM items where user_id = ? and box_id = ?")
-                            .bind(user_id, box_id).execute();
-                            std::stringstream buffer;
-                            bool hasRows = false;
-                            buffer << "[";
-                    for (Row row : myRows.fetchAll()) {
-                        hasRows = true;
-                                buffer << "{";
-                                buffer << "\"id\":" << "\"" << row[0] << "\",";
-                                buffer << "\"user_id\":" << row[0] << ",";
-                                buffer << "\"box_id\":" << row[1] << ",";
-                                buffer << "\"name\":" << "\"" << row[2] << "\",";
-                                buffer << "\"quantity\":" << row[3] << ",";
-                                buffer << "\"picture\":" << "\"" << row[4] << "\"";
-                                buffer << "},";
-                    }
-                    if (hasRows) {
-                        buffer.seekp(-1, std::ios_base::end);
-                    }
-                    buffer << "]";
-                            userItems[user_id] = buffer.str();
-                }
-                res << userItems[user_id];
-            });
     mux.handle("/login")
             .get([&](served::response &res, const served::request & req) {
                 std::stringstream buffer;
@@ -253,7 +273,7 @@ int main(void) {
                 // cookie by an expiration some browsers supposedly do not?
                 std::string cookie = "authToken=deleted;SameSite=Strict;Expires=" + buffer.str();
                 res.set_header("Set-Cookie", cookie);
-                res << "{\"logout\": \"true\"}";
+                res << "{\"logout\": true}";
             });
     served::net::server server("0.0.0.0", "8123", mux);
     cout << "Server Up...." << endl;
