@@ -7,9 +7,7 @@ Needs routes added to match golang version of:
 
 	r.HandleFunc("/boxes", postBox).Methods("POST")
 	r.HandleFunc("/boxes", putBox).Methods("PUT")
-	r.HandleFunc("/boxes", getAllBoxes).Methods("GET")
 	r.HandleFunc("/boxes/{box_id}", deleteBox).Methods("DELETE")
-	// Handle Items endpoints
 	r.HandleFunc("/items", postItem).Methods("POST")
 	r.HandleFunc("/items", putItem).Methods("PUT")
 	r.HandleFunc("/items/{box_id}", getItems).Methods("GET")
