@@ -1,9 +1,19 @@
 # boxesCPlus
 C++ API micro service for boxes react front end
 
-Work in Progress........ Update will be made once session and login code is complete.
+Work in Progress......
 
-Only one endpoint working "http://127.0.0.1:8123/boxes/1"
+Needs routes added to match golang version of:
+
+	r.HandleFunc("/boxes", postBox).Methods("POST")
+	r.HandleFunc("/boxes", putBox).Methods("PUT")
+	r.HandleFunc("/boxes", getAllBoxes).Methods("GET")
+	r.HandleFunc("/boxes/{box_id}", deleteBox).Methods("DELETE")
+	// Handle Items endpoints
+	r.HandleFunc("/items", postItem).Methods("POST")
+	r.HandleFunc("/items", putItem).Methods("PUT")
+	r.HandleFunc("/items/{box_id}", getItems).Methods("GET")
+	r.HandleFunc("/items/{item_id}", deleteItem).Methods("DELETE")
 
 Serves simple requests in less than 2 ms. On test laptop. Uses new mySQL dev API for connection pool and boost beast for http server.
 
