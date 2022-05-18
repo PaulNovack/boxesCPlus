@@ -16,6 +16,12 @@ std::string userBoxes[1000000];
 std::string boxItems[1000000];
 std::string items[1000000];
 
+// TODO: on PUT item or POST item set item[id] to empty string
+//         then set boxItems[box_id] to empy string also next get sql select will be called and cache updated
+
+// TODO: on PUT or POST a box change name etc set boxItems[box_id] to empty string
+//          then set userBoxes[user_id] to empty string next get sql select will be called and cache updated
+
 std::string gen_random(const int len) {
     static const char alphanum[] =
             "0123456789"
@@ -64,24 +70,6 @@ int logUserIn(Client &cli, std::string username, std::string password, std::stri
 // 2 split by commas
 // 3 set each value from split strings
 
-
-
-// Should refactor this won't work for any query params just for this app.
-
-std::string getQueryParam(std::string url, std::string param) {
-    std::string ret = "";
-    int plen = param.length();
-    int idx = url.find(param);
-    int delim = url.find("&");
-    int end = url.length();
-    std::string val = "";
-    if (end > delim) {
-        ret = url.substr(idx + plen + 1, delim - (idx + plen + 1));
-    } else {
-        ret = url.substr(idx + plen + 1, end - (idx + plen + 1));
-    }
-    return ret;
-}
 
 std::map<std::string, std::string> parseCookies(std::string const& s) {
     std::map<std::string, std::string> m;
