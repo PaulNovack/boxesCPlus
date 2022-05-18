@@ -51,11 +51,15 @@ You should then be able to access:
 
 http://127.0.0.1:8123/login?username=paulnovack&password=paulnovack
 
+http://127.0.0.1:8123/logout
+
 http://127.0.0.1:8123/boxes
 
 http://127.0.0.1:8123/boxes/5
 
 http://127.0.0.1:8123/logout
+
+.... other methods need added still
 
 # Performance of get boxes method using apache bench
 
