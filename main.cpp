@@ -14,6 +14,7 @@ std::mutex l_box_items_array;
 std::map<std::string, int> authKeys;
 std::string userBoxes[1000000];
 std::string userItems[1000000];
+std::string items[1000000];
 
 std::string gen_random(const int len) {
     static const char alphanum[] =
@@ -160,6 +161,7 @@ int main(void) {
             .get([&](served::response &res, const served::request & req) {
                 std::string authKey = "";
                 std::string name;
+                std::string item = "";
                 std::string header = req.header("cookie");
                 auto cookies = parseCookies(header);
                 std::map<std::string, std::string>::iterator it;
@@ -167,35 +169,48 @@ int main(void) {
                 if (it != cookies.end()) {
                     authKey = it->second;
                 }
-                std::string box_id_str = req.params["id"];
-                int box_id = stoi(box_id_str);
-                Session sess = cli.getSession();
+                std::string item_id_str = req.params["id"];
+                int item_id = stoi(item_id_str);
+
                 int user_id = getUserIdFromAuthKey(cli, authKey);
                 if (user_id == 0) {
                     res << "{\"logout\": true}";
 
                 } else {
-                    //std::lock_guard<std::mutex> guard(l_box_items_array);
-                    // may not be worth global if one user is executing sql blocks all
-                    // or copy item then immediately release mutex lock not 
-                    // letting sql statement keep lock
-                    if (userItems[box_id] != "") {
-                        std::string search = "\"user_id\":";
-                                search = search + std::to_string(user_id);;
+                    {
+                        // this is copy?  Safe ?  no lock if have to fetch with sql....
+                        
+                        //comment out the lock guards and see what happens to cout
+                        //cout is not thread safe you will get messages have written all mixed up
+                        // Enter and exit and the endl all out of order must mutex cout
+                        std::lock_guard<std::mutex> guard(l_box_items_array);
+                        item = items[item_id];
+                      //  cout << "Enter" << endl;
+                    }
+                   // {
+                   //     std::lock_guard<std::mutex> guard(l_box_items_array);
+                   //     cout << "Exit" << endl;
+                    //}
+                    
+                    if (item != "") {
+                        std::string search = "\"id\":";
+                                search = search + item_id_str;
                                 search = search + ",";
-                                search = search + "\"box_id\":";
-                                search = search + box_id_str;
-                                int pos = userItems[box_id].find(search);
+                                search = search + "\"user_id\":";
+                                search = search + std::to_string(user_id);
+                                int pos = item.find(search);
                         if (pos == -1) {
                             // if we can not match user_id and box_id in the json we do not own box here trying to 
                             // access someone elses box and items
                             user_id = 0;
-                                    res << "{\"error\": \"Attempt to access box you do not own.\"}";
+                                    res << "[]";
                         }
                     } else {
-                        SqlResult myRows =
-                                sess.sql("SELECT id,user_id,box_id, name,quantity, picture,created_at FROM items where user_id = ? and box_id = ?")
-                                .bind(user_id, box_id).execute();
+                        Session sess = cli.getSession();
+                                cout << "running sql " << endl;
+                                SqlResult myRows =
+                                sess.sql("SELECT id,user_id,box_id, name,quantity, picture,created_at FROM items where user_id = ? and id = ?")
+                                .bind(user_id, item_id).execute();
                                 std::stringstream buffer;
                                 bool hasRows = false;
                                 buffer << "[";
@@ -214,10 +229,14 @@ int main(void) {
                             buffer.seekp(-1, std::ios_base::end);
                         }
                         buffer << "]";
-                                userItems[box_id] = buffer.str();
+                                item = buffer.str();
+                        {
+                            std::lock_guard<std::mutex> guard(l_box_items_array);
+                            items[item_id] = item;
+                        }
                     }
                     if (user_id != 0) {
-                        res << userItems[box_id];
+                        res << item;
                     }
                 }
             });
@@ -227,7 +246,7 @@ int main(void) {
                 std::string name = "";
                 std::string items = "";
                 std::string authKey = "";
-             
+
                 std::string header = req.header("cookie");
                 auto cookies = parseCookies(header);
                 std::map<std::string, std::string>::iterator it;
@@ -237,7 +256,7 @@ int main(void) {
                 }
                 std::string box_id_str = req.params["id"];
                 int box_id = stoi(box_id_str);
-                Session sess = cli.getSession();
+
                 int user_id = getUserIdFromAuthKey(cli, authKey);
                 if (user_id == 0) {
                     res << "{\"logout\": true}";
@@ -246,7 +265,7 @@ int main(void) {
                     {
                         // this is copy?  Safe ?  no lock if have to fetch with sql....
                         std::lock_guard<std::mutex> guard(l_box_items_array);
-                        items = userItems[box_id];
+                                items = userItems[box_id];
                     }
                     if (items != "") {
                         std::string search = "\"user_id\":";
@@ -262,7 +281,8 @@ int main(void) {
                                     res << "{\"error\": \"Attempt to access box you do not own.\"}";
                         }
                     } else {
-                        SqlResult myRows =
+                        Session sess = cli.getSession();
+                                SqlResult myRows =
                                 sess.sql("SELECT id,user_id,box_id, name,quantity, picture,created_at FROM items where user_id = ? and box_id = ?")
                                 .bind(user_id, box_id).execute();
                                 std::stringstream buffer;
@@ -304,7 +324,7 @@ int main(void) {
                     authKey = it->second;
                 }
 
-                Session sess = cli.getSession();
+
                 int user_id = getUserIdFromAuthKey(cli, authKey);
                 if (user_id == 0) {
                     res << "{\"logout\": true}";
@@ -313,14 +333,15 @@ int main(void) {
                 {
                     // this is copy?  Safe ?  no lock if have to fetch with sql....
                     std::lock_guard<std::mutex> guard(l_user_boxes_array);
-                    boxes = userBoxes[user_id];
+                            boxes = userBoxes[user_id];
                 }
                 if (boxes != "") {
                     // TODO:  needs to check if not "" if the user has access to the box in cache
                     // simalar to /boxes/{id} route
 
                 } else {
-                    SqlResult myRows = sess.sql("SELECT id,user_id, name,weight, picture,created_at FROM boxes where user_id = ?")
+                    Session sess = cli.getSession();
+                            SqlResult myRows = sess.sql("SELECT id,user_id, name,weight, picture,created_at FROM boxes where user_id = ?")
                             .bind(user_id).execute();
                             std::stringstream buffer;
                             bool hasRows = false;
@@ -397,7 +418,7 @@ int main(void) {
             });
     served::net::server server("0.0.0.0", "8123", mux);
     cout << "Server Up...." << endl;
-    server.run(50);
+    server.run(100);
 
     return (EXIT_SUCCESS);
 }
