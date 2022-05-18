@@ -13,7 +13,7 @@ std::mutex l_user_boxes_array;
 std::mutex l_box_items_array;
 std::map<std::string, int> authKeys;
 std::string userBoxes[1000000];
-std::string userItems[1000000];
+std::string boxItems[1000000];
 std::string items[1000000];
 
 std::string gen_random(const int len) {
@@ -157,7 +157,6 @@ int main(void) {
     // use Session sess as usual
     served::multiplexer mux;
     mux.handle("/item/{id}")
-
             .get([&](served::response &res, const served::request & req) {
                 std::string authKey = "";
                 std::string name;
@@ -179,19 +178,19 @@ int main(void) {
                 } else {
                     {
                         // this is copy?  Safe ?  no lock if have to fetch with sql....
-                        
+
                         //comment out the lock guards and see what happens to cout
                         //cout is not thread safe you will get messages have written all mixed up
                         // Enter and exit and the endl all out of order must mutex cout
                         std::lock_guard<std::mutex> guard(l_box_items_array);
-                        item = items[item_id];
-                      //  cout << "Enter" << endl;
+                                item = items[item_id];
+                                //  cout << "Enter" << endl;
                     }
-                   // {
-                   //     std::lock_guard<std::mutex> guard(l_box_items_array);
-                   //     cout << "Exit" << endl;
+                    // {
+                    //     std::lock_guard<std::mutex> guard(l_box_items_array);
+                    //     cout << "Exit" << endl;
                     //}
-                    
+
                     if (item != "") {
                         std::string search = "\"id\":";
                                 search = search + item_id_str;
@@ -232,7 +231,7 @@ int main(void) {
                                 item = buffer.str();
                         {
                             std::lock_guard<std::mutex> guard(l_box_items_array);
-                            items[item_id] = item;
+                                    items[item_id] = item;
                         }
                     }
                     if (user_id != 0) {
@@ -241,7 +240,6 @@ int main(void) {
                 }
             });
     mux.handle("/boxes/{id}")
-
             .get([&](served::response &res, const served::request & req) {
                 std::string name = "";
                 std::string items = "";
@@ -265,7 +263,7 @@ int main(void) {
                     {
                         // this is copy?  Safe ?  no lock if have to fetch with sql....
                         std::lock_guard<std::mutex> guard(l_box_items_array);
-                                items = userItems[box_id];
+                                items = boxItems[box_id];
                     }
                     if (items != "") {
                         std::string search = "\"user_id\":";
@@ -273,12 +271,12 @@ int main(void) {
                                 search = search + ",";
                                 search = search + "\"box_id\":";
                                 search = search + box_id_str;
-                                int pos = userItems[box_id].find(search);
+                                int pos = items.find(search);
                         if (pos == -1) {
                             // if we can not match user_id and box_id in the json we do not own box here trying to 
                             // access someone elses box and items
                             user_id = 0;
-                                    res << "{\"error\": \"Attempt to access box you do not own.\"}";
+                                    res << "[]";
                         }
                     } else {
                         Session sess = cli.getSession();
@@ -303,7 +301,11 @@ int main(void) {
                             buffer.seekp(-1, std::ios_base::end);
                         }
                         buffer << "]";
-                                items = buffer.str();
+                        items = buffer.str();
+                        {
+                            std::lock_guard<std::mutex> guard(l_box_items_array);
+                                    boxItems[box_id] = items;
+                        }
                     }
                     if (user_id != 0) {
                         res << items;
@@ -311,7 +313,6 @@ int main(void) {
                 }
             });
     mux.handle("/boxes")
-
             .get([&](served::response &res, const served::request & req) {
                 std::string name;
                 std::string boxes;
@@ -323,8 +324,6 @@ int main(void) {
                 if (it != cookies.end()) {
                     authKey = it->second;
                 }
-
-
                 int user_id = getUserIdFromAuthKey(cli, authKey);
                 if (user_id == 0) {
                     res << "{\"logout\": true}";
@@ -338,7 +337,6 @@ int main(void) {
                 if (boxes != "") {
                     // TODO:  needs to check if not "" if the user has access to the box in cache
                     // simalar to /boxes/{id} route
-
                 } else {
                     Session sess = cli.getSession();
                             SqlResult myRows = sess.sql("SELECT id,user_id, name,weight, picture,created_at FROM boxes where user_id = ?")
@@ -361,10 +359,13 @@ int main(void) {
                     }
                     buffer << "]";
                             boxes = buffer.str();
+                    {
+                        std::lock_guard<std::mutex> guard(l_user_boxes_array);
+                                userBoxes[user_id] = boxes;
+                    }
                 }
                 res << boxes;
             });
-
     mux.handle("/login")
             .get([&](served::response &res, const served::request & req) {
                 std::stringstream buffer;
@@ -418,7 +419,6 @@ int main(void) {
             });
     served::net::server server("0.0.0.0", "8123", mux);
     cout << "Server Up...." << endl;
-    server.run(100);
-
+    server.run(50);
     return (EXIT_SUCCESS);
 }
