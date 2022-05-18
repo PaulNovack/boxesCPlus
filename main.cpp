@@ -152,10 +152,12 @@ int main(void) {
                                 search = search + "\"box_id\":";
                                 search = search + box_id_str;
                                 int pos = userItems[box_id].find(search);
-                                if(pos == -1){
-                                    user_id = 0;
-                                    res << "{\"logout\": true}";
-                                }
+                        if (pos == -1) {
+                            // if we can not match user_id and box_id in the json we do not own box here trying to 
+                            // access someone elses box and items
+                            user_id = 0;
+                                    res << "{\"error\": \"Attempt to access box you do not own.\"}";
+                        }
                     } else {
                         SqlResult myRows =
                                 sess.sql("SELECT id,user_id,box_id, name,quantity, picture,created_at FROM items where user_id = ? and box_id = ?")
@@ -199,9 +201,12 @@ int main(void) {
                     res << "{\"logout\": true}";
                     return;
                 }
-                if (userBoxes[user_id] == "") {
-
-
+              
+                if (userBoxes[user_id] != "") {
+                    // TODO:  needs to check if not "" if the user has access to the box in cache
+                    // simalar to /boxes/{id} route
+                    
+                } else {
                     SqlResult myRows = sess.sql("SELECT id,user_id, name,weight, picture,created_at FROM boxes where user_id = ?")
                             .bind(user_id).execute();
                             std::stringstream buffer;
