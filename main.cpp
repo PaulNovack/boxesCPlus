@@ -82,6 +82,7 @@ std::string getQueryParam(std::string url, std::string param) {
     return ret;
 }
 
+// replace this with a proper cookie parser !
 std::string getAuthKey(std::string cookie) {
     int pos = cookie.find("authToken=");
     int delpos = cookie.find(";");
