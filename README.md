@@ -71,3 +71,8 @@ ab -c50 -n1000000 -C 'authToken=fa37JncCHryDsbzayy4cBWDxS22JjzhM'  http://127.0.
 
 
 ![apacheBenchPerformance](https://user-images.githubusercontent.com/3844301/168474846-f1e2ad35-53c9-4717-8bcb-d0522f2a8b83.png)
+
+Improved caching ab results
+
+
+![improvedCaching](https://user-images.githubusercontent.com/3844301/169076410-a7be2f02-8a12-4e30-a250-9c0bed5f4e88.png)
