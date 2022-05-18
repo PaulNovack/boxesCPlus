@@ -9,7 +9,8 @@ using namespace std;
 
 std::mutex l_authkey_map;
 std::mutex l_users_map;
-std::mutex l_user_boxes_map;
+std::mutex l_user_boxes_array;
+std::mutex l_box_items_array;
 std::map<std::string, int> authKeys;
 std::string userBoxes[1000000];
 std::string userItems[1000000];
@@ -130,6 +131,66 @@ int main(void) {
     Client cli("boxes:boxes@127.0.0.1/boxes", ClientOption::POOL_MAX_SIZE, 60);
     // use Session sess as usual
     served::multiplexer mux;
+    mux.handle("/item/{id}")
+
+            .get([&](served::response &res, const served::request & req) {
+                std::string name;
+                std::string header = req.header("cookie");
+                std::string authKey = getAuthKey(header);
+                std::string box_id_str = req.params["id"];
+                int box_id = stoi(box_id_str);
+                Session sess = cli.getSession();
+                int user_id = getUserIdFromAuthKey(cli, authKey);
+                if (user_id == 0) {
+                    res << "{\"logout\": true}";
+
+                } else {
+                    //std::lock_guard<std::mutex> guard(l_box_items_array);
+                    // may not be worth global if one user is executing sql blocks all
+                    // or copy item then immediately release mutex lock not 
+                    // letting sql statement keep lock
+                    if (userItems[box_id] != "") {
+                        std::string search = "\"user_id\":";
+                                search = search + std::to_string(user_id);;
+                                search = search + ",";
+                                search = search + "\"box_id\":";
+                                search = search + box_id_str;
+                                int pos = userItems[box_id].find(search);
+                        if (pos == -1) {
+                            // if we can not match user_id and box_id in the json we do not own box here trying to 
+                            // access someone elses box and items
+                            user_id = 0;
+                                    res << "{\"error\": \"Attempt to access box you do not own.\"}";
+                        }
+                    } else {
+                        SqlResult myRows =
+                                sess.sql("SELECT id,user_id,box_id, name,quantity, picture,created_at FROM items where user_id = ? and box_id = ?")
+                                .bind(user_id, box_id).execute();
+                                std::stringstream buffer;
+                                bool hasRows = false;
+                                buffer << "[";
+                        for (Row row : myRows.fetchAll()) {
+                            hasRows = true;
+                                    buffer << "{";
+                                    buffer << "\"id\":" << row[0] << ",";
+                                    buffer << "\"user_id\":" << row[1] << ",";
+                                    buffer << "\"box_id\":" << row[2] << ",";
+                                    buffer << "\"name\":" << "\"" << row[3] << "\",";
+                                    buffer << "\"quantity\":" << row[4] << ",";
+                                    buffer << "\"picture\":" << "\"" << row[5] << "\"";
+                                    buffer << "},";
+                        }
+                        if (hasRows) {
+                            buffer.seekp(-1, std::ios_base::end);
+                        }
+                        buffer << "]";
+                                userItems[box_id] = buffer.str();
+                    }
+                    if (user_id != 0) {
+                        res << userItems[box_id];
+                    }
+                }
+            });
     mux.handle("/boxes/{id}")
 
             .get([&](served::response &res, const served::request & req) {
@@ -144,7 +205,10 @@ int main(void) {
                     res << "{\"logout\": true}";
 
                 } else {
-                    std::lock_guard<std::mutex> guard(l_user_boxes_map);
+                    //std::lock_guard<std::mutex> guard(l_box_items_array);
+                    // may not be worth global if one user is executing sql blocks all
+                    // or copy item then immediately release mutex lock not 
+                    // letting sql statement keep lock
                     if (userItems[box_id] != "") {
                         std::string search = "\"user_id\":";
                                 search = search + std::to_string(user_id);;
@@ -201,7 +265,7 @@ int main(void) {
                     res << "{\"logout\": true}";
                     return;
                 }
-              
+                 //std::lock_guard<std::mutex> guard(l_user_boxes_array);
                 if (userBoxes[user_id] != "") {
                     // TODO:  needs to check if not "" if the user has access to the box in cache
                     // simalar to /boxes/{id} route
@@ -236,8 +300,8 @@ int main(void) {
                 std::stringstream buffer;
                 int user_id = 0;
                 std::string url = req.url().query();
-                std::string username = getQueryParam(url, "username");
-                std::string password = getQueryParam(url, "password");
+                std::string username = req.query["username"]; //getQueryParam(url, "username");
+                std::string password = req.query["password"]; //getQueryParam(url, "password");
                 std::string authKey = "";
                 if (password != "" && username != "") {
                     user_id = logUserIn(cli, username, password, authKey);
