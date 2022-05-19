@@ -3,6 +3,7 @@
 #include <ctime>
 #include <served/served.hpp>
 #include <mysqlx/xdevapi.h>
+#include "main.h"
 
 /* 
  * File:   Item.h
@@ -18,10 +19,10 @@ class Item {
 public:
     Item();
     Item(const Item& orig);
+    std::string toJson(mItem item);
     virtual ~Item();
 private:
-    std::string items[1000000];
-    std::mutex l_items_array;
+
 };
 
 #endif /* ITEM_H */

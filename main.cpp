@@ -1,27 +1,16 @@
-#include <stdlib.h>
-#include <iostream>
-#include <ctime>
-#include <served/served.hpp>
-#include <mysqlx/xdevapi.h>
+#include "main.h"
+#include "Box.h"
+#include "Item.h"
 using namespace mysqlx;
 using namespace std;
 
-struct mBox {
-    int id;
-    int user_id;
-    std::string name;
-    float weight;
-    std::string picture;
-};
 
-struct mItem {
-    int id;
-    int user_id;
-    int box_id;
-    std::string name;
-    int quantity;
-    std::string picture;
-};
+
+// TODO: on PUT item or POST item set item[id] to empty string
+//         then set boxItems[box_id] to empy string also next get sql select will be called and cache updated
+
+// TODO: on PUT or POST a box change name etc set boxItems[box_id] to empty string
+//          then set userBoxes[user_id] to empty string next get sql select will be called and cache updated
 
 std::mutex l_authkey_map;
 std::mutex l_users_map;
@@ -33,11 +22,7 @@ std::string userBoxes[1000000];
 std::string boxItems[1000000];
 std::string items[1000000];
 
-// TODO: on PUT item or POST item set item[id] to empty string
-//         then set boxItems[box_id] to empy string also next get sql select will be called and cache updated
-
-// TODO: on PUT or POST a box change name etc set boxItems[box_id] to empty string
-//          then set userBoxes[user_id] to empty string next get sql select will be called and cache updated
+Box *boxObj;
 
 mBox boxJsonToStruct(std::string s) {
     mBox box;
@@ -88,10 +73,12 @@ mBox boxJsonToStruct(std::string s) {
         }
         if (gotValue) {
             if (key == "id") {
-                box.id = stoi(value);;
+                box.id = stoi(value);
+                ;
             }
             if (key == "user_id") {
-                box.user_id = stoi(value);;
+                box.user_id = stoi(value);
+                ;
             }
             if (key == "name") {
                 box.name = value;
@@ -163,7 +150,8 @@ mItem itemJsonToStruct(std::string s) {
         }
         if (gotValue) {
             if (key == "id") {
-                item.id = stoi(value);;
+                item.id = stoi(value);
+                ;
             }
             if (key == "name") {
                 item.name = value;
@@ -637,8 +625,6 @@ int main(void) {
             })
 
     .post([&](served::response &res, const served::request & req) {
-        std::string name;
-        std::string boxes;
         std::string authKey = "";
         std::string header = req.header("cookie");
         auto cookies = parseCookies(header);
@@ -647,101 +633,36 @@ int main(void) {
         if (it != cookies.end()) {
             authKey = it->second;
         }
-        int user_id = getUserIdFromAuthKey(cli, authKey);
-        if (user_id == 0) {
-            res << "{\"logout\": true}";
-            return;
-        }
-        {
-            // this is copy?  Safe ?  no lock if have to fetch with sql....
-            std::lock_guard<std::mutex> guard(l_user_boxes_array);
-                    boxes = userBoxes[user_id];
-        }
-        if (boxes != "") {
-            // TODO:  needs to check if not "" if the user has access to the box in cache
-            // simalar to /boxes/{id} route
-        } else {
-            Session sess = cli.getSession();
-                    SqlResult myRows = sess.sql("SELECT id,user_id, name,weight, picture,created_at FROM boxes where user_id = ?")
-                    .bind(user_id).execute();
-                    std::stringstream buffer;
-                    bool hasRows = false;
-                    buffer << "[";
-            for (Row row : myRows.fetchAll()) {
-                hasRows = true;
-                        buffer << "{";
-                        buffer << "\"id\":" << "\"" << row[0] << "\",";
-                        buffer << "\"user_id\":" << row[1] << ",";
-                        buffer << "\"name\":" << "\"" << row[2] << "\",";
-                        buffer << "\"weight\":" << "\"" << row[3] << "\",";
-                        buffer << "\"picture\":" << "\"" << row[4] << "\"";
-                        buffer << "},";
-            }
-            if (hasRows) {
-                buffer.seekp(-1, std::ios_base::end);
-            }
-            buffer << "]";
-                    boxes = buffer.str();
-            {
-                std::lock_guard<std::mutex> guard(l_user_boxes_array);
-                        userBoxes[user_id] = boxes;
-            }
-        }
-        res << boxes;
-    })
 
-    .put([&](served::response &res, const served::request & req) {
-        std::string name;
-        std::string boxes;
-        std::string authKey = "";
-        std::string header = req.header("cookie");
-        auto cookies = parseCookies(header);
-        std::map<std::string, std::string>::iterator it;
-        it = cookies.find("authToken");
-        if (it != cookies.end()) {
-            authKey = it->second;
-        }
+
         int user_id = getUserIdFromAuthKey(cli, authKey);
         if (user_id == 0) {
             res << "{\"logout\": true}";
-            return;
-        }
-        {
-            // this is copy?  Safe ?  no lock if have to fetch with sql....
-            std::lock_guard<std::mutex> guard(l_user_boxes_array);
-                    boxes = userBoxes[user_id];
-        }
-        if (boxes != "") {
-            // TODO:  needs to check if not "" if the user has access to the box in cache
-            // simalar to /boxes/{id} route
         } else {
             Session sess = cli.getSession();
-                    SqlResult myRows = sess.sql("SELECT id,user_id, name,weight, picture,created_at FROM boxes where user_id = ?")
-                    .bind(user_id).execute();
-                    std::stringstream buffer;
-                    bool hasRows = false;
-                    buffer << "[";
-            for (Row row : myRows.fetchAll()) {
-                hasRows = true;
-                        buffer << "{";
-                        buffer << "\"id\":" << "\"" << row[0] << "\",";
-                        buffer << "\"user_id\":" << row[1] << ",";
-                        buffer << "\"name\":" << "\"" << row[2] << "\",";
-                        buffer << "\"weight\":" << "\"" << row[3] << "\",";
-                        buffer << "\"picture\":" << "\"" << row[4] << "\"";
-                        buffer << "},";
-            }
-            if (hasRows) {
-                buffer.seekp(-1, std::ios_base::end);
-            }
-            buffer << "]";
-                    boxes = buffer.str();
+                    mBox box = boxJsonToStruct(req.body());
+                    //we want to allow update of any combination of 
+                    // weight != 0, name != "" and picture != ""
+                    // if 0 or in other fields empty string we leave
+                    //existing value in db using case like this is one way to do
+                    // without having to create multiple sql statements
+                    // depending on what fields were passed to be updated
+                    auto result = sess.sql("insert into boxes (name,weight,picture,user_id) values(?,?,?,?)")
+                    .bind(box.name)
+                    .bind(box.weight)
+                    .bind(box.picture)
+                    .bind(user_id)
+                    .execute();
+                    box.id = result.getAutoIncrementValue();
+                    box.user_id = user_id;
             {
                 std::lock_guard<std::mutex> guard(l_user_boxes_array);
-                        userBoxes[user_id] = boxes;
+                        userBoxes[user_id] = "";
             }
+            res << boxObj->toJson(box);
         }
-        res << boxes;
+
+
     });
     mux.handle("/login")
             .get([&](served::response &res, const served::request & req) {
