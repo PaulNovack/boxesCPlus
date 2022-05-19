@@ -6,7 +6,7 @@ C++ API micro service for boxes react front end
 Needs mutex locking access to arrays of boxes and items 
 
 Needs routes added to match golang version of:
-
+	r.HandleFunc("/boxes", postBox).Methods("GET") -- list of all users boxes
 	r.HandleFunc("/box", postBox).Methods("POST") -- new
 	r.HandleFunc("/box", putBox).Methods("PUT") -- update
 	r.HandleFunc("/box/{box_id}", deleteBox).Methods("DELETE") -- delete
