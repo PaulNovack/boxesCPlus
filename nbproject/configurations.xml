@@ -4,6 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>Box.h</itemPath>
+      <itemPath>Item.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -12,6 +14,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>Box.cpp</itemPath>
+      <itemPath>Item.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -114,9 +118,107 @@
                             perm="755"
                             owner="root"
                             group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libmysqlcppconn8.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmysqlcppconn8.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libserved.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libserved.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libmysqlcppconn8.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmysqlcppconn8.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libserved.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libserved.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libmysqlcppconn8.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmysqlcppconn8.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libserved.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libserved.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libmysqlcppconn8.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmysqlcppconn8.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libserved.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libserved.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libmysqlcppconn8.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmysqlcppconn8.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libserved.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libserved.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
         </packFileList>
       </packaging>
+      <item path="Box.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Box.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Dockerfile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Item.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Item.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="createBoxesDockerContainer.sh" ex="false" tool="3" flavor2="0">
       </item>
@@ -145,7 +247,15 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="Box.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Box.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Dockerfile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Item.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Item.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="createBoxesDockerContainer.sh" ex="false" tool="3" flavor2="0">
       </item>

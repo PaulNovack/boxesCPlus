@@ -35,6 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/Box.o \
+	${OBJECTDIR}/Item.o \
 	${OBJECTDIR}/main.o
 
 
@@ -67,6 +69,16 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/boxescplus: /usr/lib/libserved.so
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/boxescplus: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/boxescplus ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/Box.o: Box.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -I/usr/local/include/served -I/usr/local/include/mysql-connector-c++-8.0.29-src/include/ -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Box.o Box.cpp
+
+${OBJECTDIR}/Item.o: Item.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -I/usr/local/include/served -I/usr/local/include/mysql-connector-c++-8.0.29-src/include/ -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Item.o Item.cpp
 
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
