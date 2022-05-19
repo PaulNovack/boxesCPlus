@@ -7,13 +7,13 @@ Needs mutex locking access to arrays of boxes and items
 
 Needs routes added to match golang version of:
 
-	r.HandleFunc("/boxes", postBox).Methods("POST")
-	r.HandleFunc("/boxes", putBox).Methods("PUT")
-	r.HandleFunc("/boxes/{box_id}", deleteBox).Methods("DELETE")
-	r.HandleFunc("/items", postItem).Methods("POST")
-	r.HandleFunc("/items", putItem).Methods("PUT")
-	r.HandleFunc("/items/{box_id}", getItems).Methods("GET")
-	r.HandleFunc("/items/{item_id}", deleteItem).Methods("DELETE")
+	r.HandleFunc("/box", postBox).Methods("POST")
+	r.HandleFunc("/box", putBox).Methods("PUT")
+	r.HandleFunc("/box/{box_id}", deleteBox).Methods("DELETE")
+	r.HandleFunc("/item", postItem).Methods("POST")
+	r.HandleFunc("/item", putItem).Methods("PUT")
+	r.HandleFunc("/item/{box_id}", getItems).Methods("GET")
+	r.HandleFunc("/item/{item_id}", deleteItem).Methods("DELETE")
 
 Serves simple requests in less than 2 ms.
 
