@@ -11,8 +11,8 @@ Needs routes added to match golang version of:
 	r.HandleFunc("/box", putBox).Methods("PUT")
 	r.HandleFunc("/box/{box_id}", deleteBox).Methods("DELETE")
 	r.HandleFunc("/item", postItem).Methods("POST")
-	r.HandleFunc("/item", putItem).Methods("PUT")
-	r.HandleFunc("/item/{box_id}", getItems).Methods("GET")
+	r.HandleFunc("/item/{item_id}", putItem).Methods("PUT")
+	r.HandleFunc("/item/{item_id}", getItems).Methods("GET")
 	r.HandleFunc("/item/{item_id}", deleteItem).Methods("DELETE")
 
 Serves simple requests in less than 2 ms.
