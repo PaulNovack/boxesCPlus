@@ -7,15 +7,10 @@ Needs mutex locking access to arrays of boxes and items
 
 Needs routes added to match golang version of:
 
-	r.HandleFunc("/boxes", postBox).Methods("GET") -- list of all users boxes
-	r.HandleFunc("/box", postBox).Methods("POST") -- new
-	r.HandleFunc("/box", putBox).Methods("PUT") -- update
 	r.HandleFunc("/box/{box_id}", deleteBox).Methods("DELETE") -- delete
-	r.HandleFunc("/item", postItem).Methods("POST")  -- new
-	r.HandleFunc("/item/{item_id}", putItem).Methods("PUT") -- update
-	r.HandleFunc("/items/{box_id}", getItems).Methods("GET") -- all items in a box
-	r.HandleFunc("/item/{item_id}", getItems).Methods("GET") -- single item
 	r.HandleFunc("/item/{item_id}", deleteItem).Methods("DELETE") -- delete
+	
+	Most routes for JSON API done.
 
 Serves simple requests in less than 2 ms.
 
@@ -49,7 +44,7 @@ There is a docker file that contains all the set up to enable libraries and copy
 - Run: startServer.sh
 
 
-You should then be able to access: 
+You should then be able to access with (GET) request
 
 http://127.0.0.1:8123/login?username=paulnovack&password=paulnovack
 
@@ -60,6 +55,19 @@ http://127.0.0.1:8123/box/5
 http://127.0.0.1:8123/item/5
 
 http://127.0.0.1:8123/logout
+
+PUT
+
+http://127.0.0.1:8123/box/5 - updates existing box
+
+http://127.0.0.1:8123/item/5 - updates existing item
+
+
+POST
+
+http://127.0.0.1:8123/box - returns new box json with auto increment id
+
+http://127.0.0.1:8123/item - returns new box json with id the box_id is part of json payload in request
 
 .... other methods need added still
 
