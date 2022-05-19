@@ -51,9 +51,11 @@ You should then be able to access:
 
 http://127.0.0.1:8123/login?username=paulnovack&password=paulnovack
 
-http://127.0.0.1:8123/boxes
+http://127.0.0.1:8123/box
 
-http://127.0.0.1:8123/boxes/5
+http://127.0.0.1:8123/box/5
+
+http://127.0.0.1:8123/item/5
 
 http://127.0.0.1:8123/logout
 
