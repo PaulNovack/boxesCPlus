@@ -29,8 +29,9 @@ CREATE TABLE `boxes` (
   `weight` decimal(10,2) DEFAULT NULL,
   `picture` varchar(255) DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3283362 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,8 +40,64 @@ CREATE TABLE `boxes` (
 
 LOCK TABLES `boxes` WRITE;
 /*!40000 ALTER TABLE `boxes` DISABLE KEYS */;
-INSERT INTO `boxes` VALUES (3,1,'New Box Name 67',34.67,'','2022-05-10 12:29:47'),(4,1,'test2',34.65,'','2022-05-10 12:29:47'),(5,1,'Yan yah',0.00,'','2022-05-10 13:13:43'),(6,1,'Yan yah',0.00,'','2022-05-10 13:14:10'),(7,1,'Yan yah',0.00,'','2022-05-10 13:17:11'),(8,1,'Yan yah',0.00,'','2022-05-10 13:17:20'),(9,1,'New Box Name 67',34.67,'HERES MY PICRUTE.DFDE','2022-05-10 13:17:22'),(10,1,'Yan yah',0.00,'','2022-05-10 13:17:23');
 /*!40000 ALTER TABLE `boxes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `items`
+--
+
+DROP TABLE IF EXISTS `items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `items` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `box_id` int NOT NULL,
+  `quantity` bigint NOT NULL DEFAULT '1',
+  `name` varchar(255) NOT NULL,
+  `picture` varchar(255) DEFAULT '',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id_box_id` (`user_id`,`box_id`),
+  KEY `idxiduserbox` (`id`,`user_id`,`box_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `items`
+--
+
+LOCK TABLES `items` WRITE;
+/*!40000 ALTER TABLE `items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `authkey` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idxuserpass` (`username`,`password`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -52,4 +109,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-15 14:12:44
+-- Dump completed on 2022-05-20  8:13:00

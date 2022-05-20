@@ -440,6 +440,61 @@ int main(void) {
                 }
                 res << req.body();
 
+            }).del([&](served::response &res, const served::request & req) {
+                std::string authKey = "";
+                std::string header = req.header("cookie");
+                auto cookies = parseCookies(header);
+                std::map<std::string, std::string>::iterator it;
+                it = cookies.find("authToken");
+                if (it != cookies.end()) {
+                    authKey = it->second;
+                }
+                std::string item_id_str = req.params["id"];
+                int item_id = stoi(item_id_str);
+
+                int user_id = getUserIdFromAuthKey(cli, authKey);
+                if (user_id == 0) {
+                    res << "{\"logout\": true}";
+                } else {
+                    Session sess = cli.getSession();
+                            mItem item = itemJsonToStruct(req.body());
+                            //we want to allow update of any combination of 
+                            // quantity != 0, name != "" and picture != ""
+                            // if 0 or in other fields empty string we leave
+                            //existing value in db using case like this is one way to do
+                            // without having to create multiple sql statements
+                            // depending on what fields were passed to be updated
+                            auto result = sess.sql("UPDATE items "
+                            "    SET quantity = CASE "
+                            "	WHEN ? = 0 "
+                            "	THEN quantity "
+                            "	ELSE  ? "
+                            "    END "
+                            "    ,name = CASE "
+                            "	WHEN ? = '' "
+                            "	THEN name "
+                            "	ELSE  ? "
+                            "    END"
+                            "    ,picture = "
+                            "    CASE "
+                            "	when ? = ''"
+                            "	THEN picture"
+                            "	ELSE ?"
+                            "    END "
+                            " where user_id = ? "
+                            " AND id = ?")
+                            .bind(item.quantity)
+                            .bind(item.quantity)
+                            .bind(item.name)
+                            .bind(item.name)
+                            .bind(item.picture)
+                            .bind(item.picture)
+                            .bind(user_id)
+                            .bind(item_id)
+                            .execute();
+                }
+                res << req.body();
+
             });
     mux.handle("/box/{id}")
             .get([&](served::response &res, const served::request & req) {
