@@ -457,43 +457,14 @@ int main(void) {
                     res << "{\"logout\": true}";
                 } else {
                     Session sess = cli.getSession();
-                            mItem item = itemJsonToStruct(req.body());
-                            //we want to allow update of any combination of 
-                            // quantity != 0, name != "" and picture != ""
-                            // if 0 or in other fields empty string we leave
-                            //existing value in db using case like this is one way to do
-                            // without having to create multiple sql statements
-                            // depending on what fields were passed to be updated
-                            auto result = sess.sql("UPDATE items "
-                            "    SET quantity = CASE "
-                            "	WHEN ? = 0 "
-                            "	THEN quantity "
-                            "	ELSE  ? "
-                            "    END "
-                            "    ,name = CASE "
-                            "	WHEN ? = '' "
-                            "	THEN name "
-                            "	ELSE  ? "
-                            "    END"
-                            "    ,picture = "
-                            "    CASE "
-                            "	when ? = ''"
-                            "	THEN picture"
-                            "	ELSE ?"
-                            "    END "
+                            auto result = sess.sql("delete from items "
                             " where user_id = ? "
                             " AND id = ?")
-                            .bind(item.quantity)
-                            .bind(item.quantity)
-                            .bind(item.name)
-                            .bind(item.name)
-                            .bind(item.picture)
-                            .bind(item.picture)
                             .bind(user_id)
                             .bind(item_id)
                             .execute();
                 }
-                res << req.body();
+                res << "{\"deleted_item_id\":" << item_id_str << "}";
 
             });
     mux.handle("/box/{id}")
@@ -622,6 +593,32 @@ int main(void) {
                             .execute();
                 }
                 res << req.body();
+
+            }).del([&](served::response &res, const served::request & req) {
+                std::string authKey = "";
+                std::string header = req.header("cookie");
+                auto cookies = parseCookies(header);
+                std::map<std::string, std::string>::iterator it;
+                it = cookies.find("authToken");
+                if (it != cookies.end()) {
+                    authKey = it->second;
+                }
+                std::string box_id_str = req.params["id"];
+                int box_id = stoi(box_id_str);
+
+                int user_id = getUserIdFromAuthKey(cli, authKey);
+                if (user_id == 0) {
+                    res << "{\"logout\": true}";
+                } else {
+                    Session sess = cli.getSession();
+                            auto result = sess.sql("delete from boxes "
+                            " where user_id = ? "
+                            " AND id = ?")
+                            .bind(user_id)
+                            .bind(box_id)
+                            .execute();
+                }
+                res << "{\"deleted_box_id\":" << box_id_str << "}";
 
             });
     mux.handle("/box")
