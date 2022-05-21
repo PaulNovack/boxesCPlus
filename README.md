@@ -52,13 +52,13 @@ GET
 
 http://127.0.0.1:8123/login?username=paulnovack&password=paulnovack
 
-http://127.0.0.1:8123/box
+http://127.0.0.1:8123/box - Get all boxes
 
-http://127.0.0.1:8123/box/{id}
+http://127.0.0.1:8123/box/{id} - Get list of items for a box
 
-http://127.0.0.1:8123/item/{id}
+http://127.0.0.1:8123/item/{id} - Get an Item
 
-http://127.0.0.1:8123/logout
+http://127.0.0.1:8123/logout - Logout
 
 PUT
 
