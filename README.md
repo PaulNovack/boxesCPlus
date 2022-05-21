@@ -7,12 +7,7 @@ Log in will automatically create user if username is not take with password ente
 
 Needs mutex locking access to arrays of boxes and items 
 
-Needs routes added to match golang version of:
-
-	r.HandleFunc("/box/{box_id}", deleteBox).Methods("DELETE") -- delete
-	r.HandleFunc("/item/{item_id}", deleteItem).Methods("DELETE") -- delete
-	
-	Most routes for JSON API done.
+Most routes for JSON API done.
 
 Serves simple requests in less than 2 ms.
 
