@@ -3,14 +3,11 @@ C++ API micro service for boxes react front end
 
 ### Work in Progress......  
 
-Needs mutex locking access to arrays of boxes and items 
+Log in will automatically create user if username is not take with password entered.
 
-Needs routes added to match golang version of:
+Needs better mutex locking access to arrays of boxes and items and move functions to classes
 
-	r.HandleFunc("/box/{box_id}", deleteBox).Methods("DELETE") -- delete
-	r.HandleFunc("/item/{item_id}", deleteItem).Methods("DELETE") -- delete
-	
-	Most routes for JSON API done.
+Most routes for JSON API done.
 
 Serves simple requests in less than 2 ms.
 
@@ -44,30 +41,38 @@ There is a docker file that contains all the set up to enable libraries and copy
 - Run: startServer.sh
 
 
-You should then be able to access with (GET) request
+You should then be able to access:
+
+GET
 
 http://127.0.0.1:8123/login?username=paulnovack&password=paulnovack
 
-http://127.0.0.1:8123/box
+http://127.0.0.1:8123/box - Get all boxes
 
-http://127.0.0.1:8123/box/5
+http://127.0.0.1:8123/box/{id} - Get list of items for a box
 
-http://127.0.0.1:8123/item/5
+http://127.0.0.1:8123/item/{id} - Get an Item
 
-http://127.0.0.1:8123/logout
+http://127.0.0.1:8123/logout - Logout
 
 PUT
 
-http://127.0.0.1:8123/box/5 - updates existing box
+http://127.0.0.1:8123/box/{id} - updates existing box
 
-http://127.0.0.1:8123/item/5 - updates existing item
+http://127.0.0.1:8123/item/{id} - updates existing item
 
 
 POST
 
 http://127.0.0.1:8123/box - returns new box json with auto increment id
 
-http://127.0.0.1:8123/item - returns new box json with id the box_id is part of json payload in request
+http://127.0.0.1:8123/item - returns new item json with auto increment id
+
+DELETE
+
+http://127.0.0.1:8123/box/{id} - deleted box if you have ownership
+
+http://127.0.0.1:8123/item{id} - deletes item if you have ownership
 
 .... other methods need added still
 
