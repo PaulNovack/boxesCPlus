@@ -3,6 +3,8 @@ C++ API micro service for boxes react front end
 
 ### Work in Progress......  
 
+Log in will automatically create user if username is not take with password entered.
+
 Needs mutex locking access to arrays of boxes and items 
 
 Needs routes added to match golang version of:
