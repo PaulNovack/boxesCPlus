@@ -52,17 +52,17 @@ http://127.0.0.1:8123/login?username=paulnovack&password=paulnovack
 
 http://127.0.0.1:8123/box
 
-http://127.0.0.1:8123/box/5
+http://127.0.0.1:8123/box/{id}
 
-http://127.0.0.1:8123/item/5
+http://127.0.0.1:8123/item/{id}
 
 http://127.0.0.1:8123/logout
 
 PUT
 
-http://127.0.0.1:8123/box/5 - updates existing box
+http://127.0.0.1:8123/box/{id} - updates existing box
 
-http://127.0.0.1:8123/item/5 - updates existing item
+http://127.0.0.1:8123/item/{id} - updates existing item
 
 
 POST
@@ -70,6 +70,12 @@ POST
 http://127.0.0.1:8123/box - returns new box json with auto increment id
 
 http://127.0.0.1:8123/item - returns new box json with id the box_id is part of json payload in request
+
+DELETE
+
+http://127.0.0.1:8123/box/{id} - deleted box if you have ownership
+
+http://127.0.0.1:8123/item{id} - deletes item if you have ownership
 
 .... other methods need added still
 
