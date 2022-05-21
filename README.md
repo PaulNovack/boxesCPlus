@@ -5,7 +5,7 @@ C++ API micro service for boxes react front end
 
 Log in will automatically create user if username is not take with password entered.
 
-Needs mutex locking access to arrays of boxes and items 
+Needs better mutex locking access to arrays of boxes and items and move functions to classes
 
 Most routes for JSON API done.
 
