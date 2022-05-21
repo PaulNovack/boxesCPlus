@@ -767,7 +767,7 @@ int main(void) {
                 res.set_header("Set-Cookie", cookie);
                 res << "{\"logout\": true}";
             });
-    served::net::server server("0.0.0.0", "8000", mux);
+    served::net::server server("0.0.0.0", "8123", mux);
     cout << "Server Up...." << endl;
     server.run(50);
     return (EXIT_SUCCESS);
