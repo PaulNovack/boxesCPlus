@@ -71,7 +71,7 @@ POST
 
 http://127.0.0.1:8123/box - returns new box json with auto increment id
 
-http://127.0.0.1:8123/item - returns new box json with id the box_id is part of json payload in request
+http://127.0.0.1:8123/item - returns new item json with auto increment id
 
 DELETE
 
