@@ -21,6 +21,8 @@ std::string userBoxes[1000000];
 std::string boxItems[1000000];
 std::string items[1000000];
 
+std::string cDom;
+
 Box *boxObj;
 
 mBox boxJsonToStruct(std::string s) {
@@ -301,10 +303,11 @@ int main(void) {
     Client cli("boxes:boxes@127.0.0.1/boxes", ClientOption::POOL_MAX_SIZE, 60);
     Session sess = cli.getSession();
     // use Session sess as usual
+    cDom = "http://192.168.86.45:8123/";
     served::multiplexer mux;
     mux.handle("/item/{id}")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000/");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
                 std::string name;
@@ -387,7 +390,7 @@ int main(void) {
                     }
                 }
             }).put([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
                 std::string header = req.header("cookie");
@@ -444,7 +447,7 @@ int main(void) {
                 res << req.body();
 
             }).del([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
                 std::string header = req.header("cookie");
@@ -474,7 +477,7 @@ int main(void) {
             });
     mux.handle("/box/{id}")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string name = "";
                 std::string items = "";
@@ -547,7 +550,7 @@ int main(void) {
                     }
                 }
             }).put([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
                 std::string header = req.header("cookie");
@@ -606,7 +609,7 @@ int main(void) {
                 res << req.body();
 
             }).del([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
                 std::string header = req.header("cookie");
@@ -638,7 +641,7 @@ int main(void) {
             });
     mux.handle("/box")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string name;
                 std::string boxes;
@@ -694,7 +697,7 @@ int main(void) {
             })
 
     .post([&](served::response &res, const served::request & req) {
-        res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+        res.set_header("Access-Control-Allow-Origin", cDom);
         res.set_header("Access-Control-Allow-Credentials", "true");
         std::string authKey = "";
         std::string header = req.header("cookie");
@@ -737,7 +740,7 @@ int main(void) {
     });
     mux.handle("/front/box.webp")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "image/webp");
                 std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/public/";
@@ -750,7 +753,7 @@ int main(void) {
             });
     mux.handle("/front")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "application/json");
                 std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/build/";
@@ -764,7 +767,7 @@ int main(void) {
             });
     mux.handle("/manifest.json")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "application/json");
                 std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/build/";
@@ -778,7 +781,7 @@ int main(void) {
             });
     mux.handle("/static/js/")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "application/json");
                 std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/build/";
@@ -793,7 +796,7 @@ int main(void) {
             });
     mux.handle("/static/css/")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "text/css");
                 std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/build/";
@@ -809,7 +812,7 @@ int main(void) {
             });
     mux.handle("/logo192.png")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "image/png");
                 std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/build/";
@@ -823,7 +826,7 @@ int main(void) {
 
     mux.handle("/login")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "application/json");
                 std::stringstream buffer;
@@ -860,7 +863,7 @@ int main(void) {
             });
     mux.handle("/logout")
             .get([&](served::response &res, const served::request & req) {
-                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "application/json");
                 std::stringstream buffer;
