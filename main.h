@@ -1,31 +1,17 @@
 
 #ifndef MAIN_H
 #define MAIN_H
-
 #include <stdlib.h>
+#include <filesystem>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <ctime>
 #include <served/served.hpp>
 #include <mysqlx/xdevapi.h>
+#include "Box.h"
+#include "Item.h"
 
-
-
-struct mBox {
-    int id;
-    int user_id;
-    std::string name;
-    float weight;
-    std::string picture;
-};
-
-struct mItem {
-    int id;
-    int user_id;
-    int box_id;
-    std::string name;
-    int quantity;
-    std::string picture;
-};
 
 
 

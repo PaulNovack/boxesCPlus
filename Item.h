@@ -3,7 +3,7 @@
 #include <ctime>
 #include <served/served.hpp>
 #include <mysqlx/xdevapi.h>
-#include "main.h"
+
 
 /* 
  * File:   Item.h
@@ -14,6 +14,18 @@
 
 #ifndef ITEM_H
 #define ITEM_H
+
+
+
+struct mItem {
+    int id;
+    int user_id;
+    int box_id;
+    std::string name;
+    int quantity;
+    std::string picture;
+};
+
 
 class Item {
 public:

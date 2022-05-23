@@ -1,16 +1,22 @@
+#include <stdlib.h>
+#include <iostream>
+#include <ctime>
+#include <served/served.hpp>
+#include <mysqlx/xdevapi.h>
 
-/* 
- * File:   Box.h
- * Author: pnovack
- *
- * Created on May 19, 2022, 12:34 PM
- */
 
 #ifndef BOX_H
-
 #define BOX_H
-#include "main.h"
 using namespace std;
+
+
+struct mBox {
+    int id;
+    int user_id;
+    std::string name;
+    float weight;
+    std::string picture;
+};
 
 class Box {
 public:

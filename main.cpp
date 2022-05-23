@@ -1,6 +1,5 @@
 #include "main.h"
-#include "Box.h"
-#include "Item.h"
+
 using namespace mysqlx;
 using namespace std;
 
@@ -305,6 +304,8 @@ int main(void) {
     served::multiplexer mux;
     mux.handle("/item/{id}")
             .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000/");
+                res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
                 std::string name;
                 std::string item = "";
@@ -386,6 +387,8 @@ int main(void) {
                     }
                 }
             }).put([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
                 std::string header = req.header("cookie");
                 auto cookies = parseCookies(header);
@@ -441,6 +444,8 @@ int main(void) {
                 res << req.body();
 
             }).del([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
                 std::string header = req.header("cookie");
                 auto cookies = parseCookies(header);
@@ -469,6 +474,8 @@ int main(void) {
             });
     mux.handle("/box/{id}")
             .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string name = "";
                 std::string items = "";
                 std::string authKey = "";
@@ -540,6 +547,8 @@ int main(void) {
                     }
                 }
             }).put([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
                 std::string header = req.header("cookie");
                 auto cookies = parseCookies(header);
@@ -592,9 +601,13 @@ int main(void) {
                             .bind(box_id)
                             .execute();
                 }
+                std::lock_guard<std::mutex> guard(l_user_boxes_array);
+                userBoxes[user_id] = "";
                 res << req.body();
 
             }).del([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
                 std::string header = req.header("cookie");
                 auto cookies = parseCookies(header);
@@ -618,11 +631,15 @@ int main(void) {
                             .bind(box_id)
                             .execute();
                 }
-                res << "{\"deleted_box_id\":" << box_id_str << "}";
+                std::lock_guard<std::mutex> guard(l_user_boxes_array);
+                userBoxes[user_id] = "";
+                res << req.body();
 
             });
     mux.handle("/box")
             .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string name;
                 std::string boxes;
                 std::string authKey = "";
@@ -656,10 +673,10 @@ int main(void) {
                     for (Row row : myRows.fetchAll()) {
                         hasRows = true;
                                 buffer << "{";
-                                buffer << "\"id\":" << "\"" << row[0] << "\",";
+                                buffer << "\"id\":" << row[0] << ",";
                                 buffer << "\"user_id\":" << row[1] << ",";
                                 buffer << "\"name\":" << "\"" << row[2] << "\",";
-                                buffer << "\"weight\":" << "\"" << row[3] << "\",";
+                                buffer << "\"weight\":" << row[3] << ",";
                                 buffer << "\"picture\":" << "\"" << row[4] << "\"";
                                 buffer << "},";
                     }
@@ -677,6 +694,8 @@ int main(void) {
             })
 
     .post([&](served::response &res, const served::request & req) {
+        res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+        res.set_header("Access-Control-Allow-Credentials", "true");
         std::string authKey = "";
         std::string header = req.header("cookie");
         auto cookies = parseCookies(header);
@@ -716,8 +735,97 @@ int main(void) {
 
 
     });
+    mux.handle("/front/box.webp")
+            .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Credentials", "true");
+                res.set_header("content-type", "image/webp");
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/public/";
+                std::string image_name = baseDir + "box.webp";
+                std::ifstream ifs(image_name);
+                res.set_body(std::string(
+                        (std::istreambuf_iterator<char>(ifs)),
+                        (std::istreambuf_iterator<char>())
+                        ));
+            });
+    mux.handle("/front")
+            .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Credentials", "true");
+                res.set_header("content-type", "application/json");
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/build/";
+                std::string image_name = baseDir + "index.html";
+                std::ifstream ifs(image_name);
+                res.set_body(std::string(
+                        (std::istreambuf_iterator<char>(ifs)),
+                        (std::istreambuf_iterator<char>())
+                        ));
+                res.set_header("content-type", "text/html");
+            });
+    mux.handle("/manifest.json")
+            .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Credentials", "true");
+                res.set_header("content-type", "application/json");
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/build/";
+                std::string image_name = baseDir + "manifest.json";
+                std::ifstream ifs(image_name);
+                res.set_body(std::string(
+                        (std::istreambuf_iterator<char>(ifs)),
+                        (std::istreambuf_iterator<char>())
+                        ));
+                res.set_header("content-type", "text/html");
+            });
+    mux.handle("/static/js/")
+            .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:8123");
+                res.set_header("Access-Control-Allow-Credentials", "true");
+                res.set_header("content-type", "application/json");
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/build/";
+                std::string url = req.url().path();
+                std::string filename = url.substr(url.rfind('/') + 1);;
+                std::string image_name = baseDir + "static/js/" + filename;
+                std::ifstream ifs(image_name);
+                res.set_body(std::string(
+                        (std::istreambuf_iterator<char>(ifs)),
+                        (std::istreambuf_iterator<char>())
+                        ));
+            });
+    mux.handle("/static/css/")
+            .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Credentials", "true");
+                res.set_header("content-type", "text/css");
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/build/";
+
+                std::string url = req.url().path();
+                std::string filename = url.substr(url.rfind('/') + 1);;
+                std::string image_name = baseDir + "static/css/" + filename;
+                std::ifstream ifs(image_name);
+                res.set_body(std::string(
+                        (std::istreambuf_iterator<char>(ifs)),
+                        (std::istreambuf_iterator<char>())
+                        ));
+            });
+    mux.handle("/logo192.png")
+            .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Credentials", "true");
+                res.set_header("content-type", "image/png");
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/boxes/build/";
+                std::string image_name = baseDir + "logo192.png";
+                std::ifstream ifs(image_name);
+                res.set_body(std::string(
+                        (std::istreambuf_iterator<char>(ifs)),
+                        (std::istreambuf_iterator<char>())
+                        ));
+            });
+
     mux.handle("/login")
             .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Credentials", "true");
+                res.set_header("content-type", "application/json");
                 std::stringstream buffer;
                 int user_id = 0;
                 //std::string url = req.url().query();
@@ -726,7 +834,6 @@ int main(void) {
                 std::string authKey = "";
                 if (password != "" && username != "") {
                     user_id = logUserIn(cli, username, password, authKey);
-                            res.set_header("content-type", "application/json");
                             time_t now = time(0);
                             // cookies are in GMT time.
                             tm *ltm = gmtime(&now);
@@ -753,6 +860,9 @@ int main(void) {
             });
     mux.handle("/logout")
             .get([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", "http://localhost:3000");
+                res.set_header("Access-Control-Allow-Credentials", "true");
+                res.set_header("content-type", "application/json");
                 std::stringstream buffer;
                 std::string timeReadable = "";
                 time_t now = time(0);
