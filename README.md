@@ -3,6 +3,8 @@ C++ API micro service for boxes react front end
 
 ### Work in Progress......  
 
+Has routes set up to server boxesReact Production build files.  Path are currently hardcoded in the source.  Will change to commandline startup arguments
+
 Log in will automatically create user if username is not take with password entered.
 
 Needs better mutex locking access to arrays of boxes and items and move functions to classes
