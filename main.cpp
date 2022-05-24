@@ -296,7 +296,7 @@ int getUserIdFromAuthKey(Client &cli, std::string authKey) {
         user_id = row[0];
     }
     if (user_id != 0) {
-
+        std::lock_guard<std::mutex> guard(l_authkey_map);
         authKeys.insert(std::make_pair(authKey, user_id));
     }
     return user_id;
@@ -329,23 +329,12 @@ int main(void) {
                 int user_id = getUserIdFromAuthKey(cli, authKey);
                 if (user_id == 0) {
                     res << "{\"logout\": true}";
-
                 } else {
                     {
-                        // this is copy?  Safe ?  no lock if have to fetch with sql....
-
-                        //comment out the lock guards and see what happens to cout
-                        //cout is not thread safe you will get messages have written all mixed up
-                        // Enter and exit and the endl all out of order must mutex cout
                         std::lock_guard<std::mutex> guard(l_box_items_array);
                                 item = boxItems[item_id];
                                 //  cout << "Enter" << endl;
                     }
-                    // {
-                    //     std::lock_guard<std::mutex> guard(l_box_items_array);
-                    //     cout << "Exit" << endl;
-                    //}
-
                     if (item != "") {
                         std::string search = "\"id\":";
                                 search = search + item_id_str;
@@ -354,8 +343,6 @@ int main(void) {
                                 search = search + std::to_string(user_id);
                                 int pos = item.find(search);
                         if (pos == -1) {
-                            // if we can not match user_id and box_id in the json we do not own box here trying to 
-                            // access someone elses box and items
                             user_id = 0;
                                     res << "[]";
                         }
@@ -384,9 +371,6 @@ int main(void) {
                         }
                         buffer << "]";
                                 item = buffer.str();
-                        {
-
-                        }
                     }
                     if (user_id != 0) {
                         res << item;
@@ -413,12 +397,6 @@ int main(void) {
                 } else {
                     Session sess = cli.getSession();
                             item = itemJsonToStruct(req.body());
-                            //we want to allow update of any combination of 
-                            // quantity != 0, name != "" and picture != ""
-                            // if 0 or in other fields empty string we leave
-                            //existing value in db using case like this is one way to do
-                            // without having to create multiple sql statements
-                            // depending on what fields were passed to be updated
                             auto result = sess.sql("UPDATE items "
                             "    SET quantity = CASE "
                             "	WHEN ? = 0 "
@@ -447,7 +425,6 @@ int main(void) {
                             .bind(user_id)
                             .bind(item.id)
                             .execute();
-
                 }
                 std::lock_guard<std::mutex> guard(l_box_items_array);
                 boxItems[item.box_id] = "";
@@ -519,13 +496,6 @@ int main(void) {
                     res << "{\"logout\": true}";
                 } else {
                     Session sess = cli.getSession();
-
-                            //we want to allow update of any combination of 
-                            // weight != 0, name != "" and picture != ""
-                            // if 0 or in other fields empty string we leave
-                            //existing value in db using case like this is one way to do
-                            // without having to create multiple sql statements
-                            // depending on what fields were passed to be updated
                             auto result = sess.sql("insert into items (name,quantity,picture,box_id,user_id) values(?,?,?,?,?)")
                             .bind(item.name)
                             .bind(item.quantity)
@@ -536,14 +506,11 @@ int main(void) {
                             item.id = result.getAutoIncrementValue();
                             item.user_id = user_id;
                     {
-
+                        std::lock_guard<std::mutex> guard(l_box_items_array);
+                                boxItems[box_id] = "";
                     }
-                    std::lock_guard<std::mutex> guard(l_box_items_array);
-                            boxItems[box_id] = "";
-                            res << itemObj->toJson(item);
+                    res << itemObj->toJson(item);
                 }
-
-
             });
     mux.handle("/box/{id}")
             .get([&](served::response &res, const served::request & req) {
@@ -566,7 +533,6 @@ int main(void) {
                 int user_id = getUserIdFromAuthKey(cli, authKey);
                 if (user_id == 0) {
                     res << "{\"logout\": true}";
-
                 } else {
                     {
                         // this is copy?  Safe ?  no lock if have to fetch with sql....
@@ -639,12 +605,6 @@ int main(void) {
                 } else {
                     Session sess = cli.getSession();
                             mBox box = boxJsonToStruct(req.body());
-                            //we want to allow update of any combination of 
-                            // weight != 0, name != "" and picture != ""
-                            // if 0 or in other fields empty string we leave
-                            //existing value in db using case like this is one way to do
-                            // without having to create multiple sql statements
-                            // depending on what fields were passed to be updated
                             auto result = sess.sql("UPDATE boxes "
                             "    SET weight = CASE "
                             "	WHEN ? = 0 "
@@ -785,12 +745,6 @@ int main(void) {
         } else {
             Session sess = cli.getSession();
                     mBox box = boxJsonToStruct(req.body());
-                    //we want to allow update of any combination of 
-                    // weight != 0, name != "" and picture != ""
-                    // if 0 or in other fields empty string we leave
-                    //existing value in db using case like this is one way to do
-                    // without having to create multiple sql statements
-                    // depending on what fields were passed to be updated
                     auto result = sess.sql("insert into boxes (name,weight,picture,user_id) values(?,?,?,?)")
                     .bind(box.name)
                     .bind(box.weight)
@@ -805,8 +759,6 @@ int main(void) {
             }
             res << boxObj->toJson(box);
         }
-
-
     });
     mux.handle("/front/box.webp")
             .get([&](served::response &res, const served::request & req) {
