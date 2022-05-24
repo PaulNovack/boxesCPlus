@@ -456,6 +456,7 @@ int main(void) {
                 std::string authKey = "";
                 std::string header = req.header("cookie");
                 auto cookies = parseCookies(header);
+                mItem item;
                 std::map<std::string, std::string>::iterator it;
                 it = cookies.find("authToken");
                 if (it != cookies.end()) {
@@ -463,13 +464,26 @@ int main(void) {
                 }
                 std::string item_id_str = req.params["id"];
                 int item_id = stoi(item_id_str);
-
+                int box_id = 0;
+                std::string box_id_str = "";
                 int user_id = getUserIdFromAuthKey(cli, authKey);
                 if (user_id == 0) {
                     res << "{\"logout\": true}";
                 } else {
+                    item = itemJsonToStruct(req.body());
                     Session sess = cli.getSession();
-                            auto result = sess.sql("delete from items "
+                    // Get box to kill cache
+                    SqlResult myRows =
+                    sess.sql("SELECT box_id from items where id = ? and user_id = ?")
+                    .bind(item_id, user_id).execute();
+                    std::stringstream buffer;
+                    bool hasRows = false;
+                    for (Row row : myRows.fetchAll()) {
+                        buffer << row[0];
+                    }
+                    box_id_str = buffer.str();
+                    box_id = stoi(box_id_str);
+                    auto result = sess.sql("delete from items "
                             " where user_id = ? "
                             " AND id = ?")
                             .bind(user_id)
@@ -477,7 +491,7 @@ int main(void) {
                             .execute();
                 }
                 std::lock_guard<std::mutex> guard(l_box_items_array);
-                boxItems[item_id] = "";
+                boxItems[box_id] = "";
                 res << "{\"deleted_item_id\":" << item_id_str << "}";
 
             }).post([&](served::response &res, const served::request & req) {
