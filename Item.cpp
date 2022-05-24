@@ -7,7 +7,7 @@ Item::Item() {
 Item::Item(const Item& orig) {
 }
 
-std::string toJson(mItem item){
+std::string Item::toJson(mItem item){
     //id,user_id,name,weight, picture
     std::stringstream buffer;
     buffer << "{";
@@ -21,14 +21,14 @@ std::string toJson(mItem item){
          buffer << "\"box_id\":" << item.box_id << ",";       
     }
     if(item.name != ""){
-         buffer << "\"name\":" << item.name << ",";       
+         buffer << "\"name\":" << "\"" << item.name << "\",";       
     }
     
     if(item.quantity != 0){
          buffer << "\"quantity\":" << item.quantity << ",";       
     }
     if(item.picture != ""){
-         buffer << "\"name\":" << item.picture << ",";       
+         buffer << "\"picture\":" << "\"" << item.picture << "\",";            
     }
     buffer.seekp(-1, std::ios_base::end);
     buffer << "}";

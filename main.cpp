@@ -19,11 +19,12 @@ std::mutex l_box_items_array;
 std::map<std::string, int> authKeys;
 std::string userBoxes[1000000];
 std::string boxItems[1000000];
-std::string items[1000000];
+
 
 std::string cDom;
 
 Box *boxObj;
+Item *itemObj;
 
 mBox boxJsonToStruct(std::string s) {
     mBox box;
@@ -334,7 +335,7 @@ int main(void) {
                         //cout is not thread safe you will get messages have written all mixed up
                         // Enter and exit and the endl all out of order must mutex cout
                         std::lock_guard<std::mutex> guard(l_box_items_array);
-                                item = items[item_id];
+                                item = boxItems[item_id];
                                 //  cout << "Enter" << endl;
                     }
                     // {
@@ -382,7 +383,7 @@ int main(void) {
                                 item = buffer.str();
                         {
                             std::lock_guard<std::mutex> guard(l_box_items_array);
-                                    items[item_id] = item;
+                                    boxItems[item_id] = item;
                         }
                     }
                     if (user_id != 0) {
@@ -443,6 +444,7 @@ int main(void) {
                             .bind(user_id)
                             .bind(item_id)
                             .execute();
+
                 }
                 res << req.body();
 
@@ -472,7 +474,56 @@ int main(void) {
                             .bind(item_id)
                             .execute();
                 }
+                std::lock_guard<std::mutex> guard(l_box_items_array);
+                boxItems[item_id] = "";
                 res << "{\"deleted_item_id\":" << item_id_str << "}";
+
+            }).post([&](served::response &res, const served::request & req) {
+                res.set_header("Access-Control-Allow-Origin", cDom);
+                res.set_header("Access-Control-Allow-Credentials", "true");
+                std::string authKey = "";
+                std::string header = req.header("cookie");
+                std::string box_id_str = req.params["id"];
+                int box_id = stoi(box_id_str);
+                auto cookies = parseCookies(header);
+                std::map<std::string, std::string>::iterator it;
+                it = cookies.find("authToken");
+                if (it != cookies.end()) {
+                    authKey = it->second;
+                }
+
+                mItem item = itemJsonToStruct(req.body());
+                item.quantity = 1;
+                item.box_id = box_id;
+                int user_id = getUserIdFromAuthKey(cli, authKey);
+                if (user_id == 0) {
+                    res << "{\"logout\": true}";
+                } else {
+                    Session sess = cli.getSession();
+
+                            //we want to allow update of any combination of 
+                            // weight != 0, name != "" and picture != ""
+                            // if 0 or in other fields empty string we leave
+                            //existing value in db using case like this is one way to do
+                            // without having to create multiple sql statements
+                            // depending on what fields were passed to be updated
+                            auto result = sess.sql("insert into items (name,quantity,picture,box_id,user_id) values(?,?,?,?,?)")
+                            .bind(item.name)
+                            .bind(item.quantity)
+                            .bind(item.picture)
+                            .bind(box_id)
+                            .bind(user_id)
+                            .execute();
+                            item.id = result.getAutoIncrementValue();
+                            item.user_id = user_id;
+                    {
+
+                    }
+                    std::lock_guard<std::mutex> guard(l_box_items_array);
+                            boxItems[box_id] = "";
+                            res << itemObj->toJson(item);
+                }
+
 
             });
     mux.handle("/box/{id}")
@@ -608,7 +659,7 @@ int main(void) {
                 userBoxes[user_id] = "";
                 res << req.body();
 
-            }).del([&](served::response &res, const served::request & req) {
+            }) .del([&](served::response &res, const served::request & req) {
                 res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
