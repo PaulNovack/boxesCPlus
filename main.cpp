@@ -663,6 +663,12 @@ int main(void) {
                             .bind(user_id)
                             .bind(box_id)
                             .execute();
+                            result = sess.sql("delete from items "
+                            " where user_id = ? "
+                            " AND box_id = ?")
+                            .bind(user_id)
+                            .bind(box_id)
+                            .execute();
                 }
                 std::lock_guard<std::mutex> guard(l_user_boxes_array);
                 userBoxes[user_id] = "";
