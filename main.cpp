@@ -277,27 +277,30 @@ std::string getAuthKey(std::string cookie) {
 int getUserIdFromAuthKey(Client &cli, std::string authKey) {
 
     int user_id = 0;
-    std::lock_guard<std::mutex> guard(l_authkey_map);
-    std::map<std::string, int>::iterator it;
-    it = authKeys.find(authKey);
-    if (it != authKeys.end()) {
-        user_id = it->second;
-        return user_id;
-    } else {
-        // only get mysql session if needed slows code otherwise
-        // using find in map is much faster!!
-        Session sess = cli.getSession();
-        SqlResult myRows = sess.sql("SELECT id FROM users where authkey = ?")
-                .bind(authKey).execute();
-        for (Row row : myRows.fetchAll()) {
-            user_id = row[0];
+    {
+        std::lock_guard<std::mutex> guard(l_authkey_map);
+        std::map<std::string, int>::iterator it;
+        it = authKeys.find(authKey);
+        if (it != authKeys.end()) {
+            user_id = it->second;
+            return user_id;
         }
-        if (user_id != 0) {
-
-            authKeys.insert(std::make_pair(authKey, user_id));
-        }
-        return user_id;
+        // leave lock scope for concurrency before sql (slower)
     }
+    // only get mysql session if needed slows code otherwise
+    // using find in map is much faster!!
+    Session sess = cli.getSession();
+    SqlResult myRows = sess.sql("SELECT id FROM users where authkey = ?")
+            .bind(authKey).execute();
+    for (Row row : myRows.fetchAll()) {
+        user_id = row[0];
+    }
+    if (user_id != 0) {
+
+        authKeys.insert(std::make_pair(authKey, user_id));
+    }
+    return user_id;
+
 }
 
 int main(void) {
@@ -471,19 +474,19 @@ int main(void) {
                     res << "{\"logout\": true}";
                 } else {
                     item = itemJsonToStruct(req.body());
-                    Session sess = cli.getSession();
-                    // Get box to kill cache
-                    SqlResult myRows =
-                    sess.sql("SELECT box_id from items where id = ? and user_id = ?")
-                    .bind(item_id, user_id).execute();
-                    std::stringstream buffer;
-                    bool hasRows = false;
+                            Session sess = cli.getSession();
+                            // Get box to kill cache
+                            SqlResult myRows =
+                            sess.sql("SELECT box_id from items where id = ? and user_id = ?")
+                            .bind(item_id, user_id).execute();
+                            std::stringstream buffer;
+                            bool hasRows = false;
                     for (Row row : myRows.fetchAll()) {
                         buffer << row[0];
                     }
                     box_id_str = buffer.str();
-                    box_id = stoi(box_id_str);
-                    auto result = sess.sql("delete from items "
+                            box_id = stoi(box_id_str);
+                            auto result = sess.sql("delete from items "
                             " where user_id = ? "
                             " AND id = ?")
                             .bind(user_id)
