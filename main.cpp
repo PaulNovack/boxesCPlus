@@ -162,7 +162,7 @@ mItem itemJsonToStruct(std::string s) {
                 item.quantity = stoi(value);
             }
             if (key == "box_id") {
-                item.quantity = stoi(value);
+                item.box_id = stoi(value);
             }
             if (key == "picture") {
 
@@ -382,8 +382,7 @@ int main(void) {
                         buffer << "]";
                                 item = buffer.str();
                         {
-                            std::lock_guard<std::mutex> guard(l_box_items_array);
-                                    boxItems[item_id] = item;
+
                         }
                     }
                     if (user_id != 0) {
@@ -394,6 +393,7 @@ int main(void) {
                 res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 std::string authKey = "";
+                mItem item;
                 std::string header = req.header("cookie");
                 auto cookies = parseCookies(header);
                 std::map<std::string, std::string>::iterator it;
@@ -409,7 +409,7 @@ int main(void) {
                     res << "{\"logout\": true}";
                 } else {
                     Session sess = cli.getSession();
-                            mItem item = itemJsonToStruct(req.body());
+                            item = itemJsonToStruct(req.body());
                             //we want to allow update of any combination of 
                             // quantity != 0, name != "" and picture != ""
                             // if 0 or in other fields empty string we leave
@@ -442,10 +442,12 @@ int main(void) {
                             .bind(item.picture)
                             .bind(item.picture)
                             .bind(user_id)
-                            .bind(item_id)
+                            .bind(item.id)
                             .execute();
 
                 }
+                std::lock_guard<std::mutex> guard(l_box_items_array);
+                boxItems[item.box_id] = "";
                 res << req.body();
 
             }).del([&](served::response &res, const served::request & req) {
