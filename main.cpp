@@ -303,8 +303,9 @@ int getUserIdFromAuthKey(Client &cli, std::string authKey) {
 
 }
 
-int main(void) {
-    Client cli("boxes:boxes@127.0.0.1/boxes", ClientOption::POOL_MAX_SIZE, 60);
+int main(int argc, char *argv[]) {
+    std::string connectString = argv[1];
+    Client cli(connectString, ClientOption::POOL_MAX_SIZE, 60);
     Session sess = cli.getSession();
     // use Session sess as usual
     cDom = "http://192.168.86.45:8123/";
