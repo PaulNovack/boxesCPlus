@@ -904,7 +904,7 @@ int main(void) {
                 // not for certain but set cookie to expire now and value deleted just
                 // in case users browser does not allow you to serverside delete a 
                 // cookie by an expiration some browsers supposedly do not?
-                std::string cookie = "authToken=deleted;SameSite=Strict;Expires=" + buffer.str();
+                std::string cookie = "authToken=;SameSite=Strict;Expires=" + buffer.str();
                 res.set_header("Set-Cookie", cookie);
                 res << "{\"logout\": true}";
             });
