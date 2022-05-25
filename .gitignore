@@ -1,5 +1,5 @@
 build
 /build
 /nbproject/project.xml
-/nbproject/private
-/nbproject/private/configurations.xml
+nbproject/private
+nbproject/private/configurations.xml
