@@ -16,6 +16,8 @@ Most routes for JSON API done.
 
 Serves simple requests in less than 2 ms.
 
+when starting service dbcommection string like 'boxes:boxes@127.0.0.1/boxes' must be passed as commandline argument.
+
 Requires libs installed in addition to normal c++ build tools to compile
 
 MySQLConnector C++  uses xDev API https://dev.mysql.com/doc/connector-cpp/8.0/en/
