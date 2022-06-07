@@ -304,6 +304,7 @@ int getUserIdFromAuthKey(Client &cli, std::string authKey) {
 }
 
 int main(int argc, char *argv[]) {
+    cout << "If there is an error there is no connection string provided" << endl;
     std::string connectString = argv[1];
     Client cli(connectString, ClientOption::POOL_MAX_SIZE, 60);
     Session sess = cli.getSession();
