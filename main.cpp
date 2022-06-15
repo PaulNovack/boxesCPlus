@@ -300,7 +300,6 @@ int getUserIdFromAuthKey(Client &cli, std::string authKey) {
         authKeys.insert(std::make_pair(authKey, user_id));
     }
     return user_id;
-
 }
 
 int main(int argc, char *argv[]) {
@@ -942,7 +941,7 @@ int main(int argc, char *argv[]) {
         res.set_header("content-type", "text/html");
     });
 
-    served::net::server server("0.0.0.0", "8123", mux);
+    served::net::server server("0.0.0.0", "80", mux);
     cout << "Server Up...." << endl;
     server.run(50);
     return (EXIT_SUCCESS);
