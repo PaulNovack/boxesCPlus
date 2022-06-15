@@ -31,6 +31,7 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
     <itemPath>Dockerfile</itemPath>
+    <itemPath>data/boxes.sql</itemPath>
     <itemPath>createBoxesDockerContainer.sh</itemPath>
     <itemPath>startServer.sh</itemPath>
   </logicalFolder>
@@ -245,6 +246,24 @@
                             perm="755"
                             owner="root"
                             group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libmysqlcppconn8.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmysqlcppconn8.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/libserved.so"
+                            from="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libserved.so"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
         </packFileList>
       </packaging>
       <item path="Box.cpp" ex="false" tool="1" flavor2="0">
@@ -258,6 +277,8 @@
       <item path="Item.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="createBoxesDockerContainer.sh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="data/boxes.sql" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -297,6 +318,8 @@
       <item path="Item.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="createBoxesDockerContainer.sh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="data/boxes.sql" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
