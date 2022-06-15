@@ -304,6 +304,7 @@ int getUserIdFromAuthKey(Client &cli, std::string authKey) {
 }
 
 int main(int argc, char *argv[]) {
+<<<<<<< HEAD
     ifstream inputFileMysqlIP("/home/ubuntu/mysqlIP.txt");
     ifstream inputFileThisIP("/home/ubuntu/thisIP.txt");
     std::string line;
@@ -322,6 +323,10 @@ int main(int argc, char *argv[]) {
     
     
     std::string connectString = "boxes:boxes@" + mySQLserverIP + "/boxes";
+=======
+    cout << "If there is an error there is no connection string provided" << endl;
+    std::string connectString = argv[1];
+>>>>>>> c6ef4d8d1d6f280224f78a8d7e6924cb93de9798
     Client cli(connectString, ClientOption::POOL_MAX_SIZE, 60);
     Session sess = cli.getSession();
     // use Session sess as usual
