@@ -303,8 +303,8 @@ int getUserIdFromAuthKey(Client &cli, std::string authKey) {
 }
 
 int main(int argc, char *argv[]) {
-    ifstream inputFileMysqlIP("/home/ubuntu/mysqlIP.txt");
-    ifstream inputFileThisIP("/home/ubuntu/thisIP.txt");
+    ifstream inputFileMysqlIP("/home/pnovack/mysqlIP.txt");
+    ifstream inputFileThisIP("/home/pnovack/thisIP.txt");
     std::string line;
     std::string mySQLserverIP = "127.0.0.1";
     std::string thisIP = "127.0.0.1";
@@ -321,10 +321,13 @@ int main(int argc, char *argv[]) {
     
     
     std::string connectString = "boxes:boxes@" + mySQLserverIP + "/boxes";
+    cout << connectString << endl;
+    
     Client cli(connectString, ClientOption::POOL_MAX_SIZE, 60);
     Session sess = cli.getSession();
     // use Session sess as usual
     cDom = "http://" + thisIP + "/";
+    cout << cDom << endl;
     served::multiplexer mux;
 
 
@@ -790,7 +793,7 @@ int main(int argc, char *argv[]) {
                 res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "image/webp");
-                std::string baseDir = "/home/ubuntu/code/Boxes/BoxesReact/boxes/public/";
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/public/";
                 std::string image_name = baseDir + "box.webp";
                 std::ifstream ifs(image_name);
                 res.set_body(std::string(
@@ -803,7 +806,7 @@ int main(int argc, char *argv[]) {
                 res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "application/json");
-                std::string baseDir = "/home/ubuntu/code/Boxes/BoxesReact/boxes/build/";
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/build/";
                 std::string image_name = baseDir + "index.html";
                 std::ifstream ifs(image_name);
                 res.set_body(std::string(
@@ -817,7 +820,7 @@ int main(int argc, char *argv[]) {
                 res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "application/json");
-                std::string baseDir = "/home/ubuntu/code/Boxes/BoxesReact/boxes/build/";
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/build/";
                 std::string image_name = baseDir + "manifest.json";
                 std::ifstream ifs(image_name);
                 res.set_body(std::string(
@@ -831,7 +834,7 @@ int main(int argc, char *argv[]) {
                 res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "application/json");
-                std::string baseDir = "/home/ubuntu/code/Boxes/BoxesReact/boxes/build/";
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/build/";
                 std::string url = req.url().path();
                 std::string filename = url.substr(url.rfind('/') + 1);;
                 std::string image_name = baseDir + "static/js/" + filename;
@@ -846,7 +849,7 @@ int main(int argc, char *argv[]) {
                 res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "text/css");
-                std::string baseDir = "/home/ubuntu/code/Boxes/BoxesReact/boxes/build/";
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/build/";
 
                 std::string url = req.url().path();
                 std::string filename = url.substr(url.rfind('/') + 1);;
@@ -862,7 +865,7 @@ int main(int argc, char *argv[]) {
                 res.set_header("Access-Control-Allow-Origin", cDom);
                 res.set_header("Access-Control-Allow-Credentials", "true");
                 res.set_header("content-type", "image/png");
-                std::string baseDir = "/home/ubuntu/code/Boxes/BoxesReact/boxes/build/";
+                std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/build/";
                 std::string image_name = baseDir + "logo192.png";
                 std::ifstream ifs(image_name);
                 res.set_body(std::string(
@@ -931,7 +934,7 @@ int main(int argc, char *argv[]) {
         res.set_header("Access-Control-Allow-Origin", cDom);
         res.set_header("Access-Control-Allow-Credentials", "true");
         res.set_header("content-type", "application/json");
-        std::string baseDir = "/home/ubuntu/code/Boxes/BoxesReact/boxes/build/";
+        std::string baseDir = "/home/pnovack/code/Boxes/BoxesReact/build/";
         std::string image_name = baseDir + "index.html";
         std::ifstream ifs(image_name);
         res.set_body(std::string(
@@ -941,7 +944,7 @@ int main(int argc, char *argv[]) {
         res.set_header("content-type", "text/html");
     });
 
-    served::net::server server("0.0.0.0", "80", mux);
+    served::net::server server("0.0.0.0", "8123", mux);
     cout << "Server Up...." << endl;
     server.run(50);
     return (EXIT_SUCCESS);
